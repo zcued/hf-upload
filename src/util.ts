@@ -69,14 +69,7 @@ const getImgPreview = (file, callback) => {
     const scanner = new DataView(readerResult)
     let idx = 0
     let value = 1 // Non-rotated is the default
-    if (readerResult.length < 2 || scanner.getUint16(idx) !== 0xffd8) {
-      // Not a JPEG
-      if (callback) {
-        callback(blobUrl)
-      }
 
-      return
-    }
     idx += 2
     let maxBytes = scanner.byteLength
     while (idx < maxBytes - 2) {
@@ -157,12 +150,7 @@ function md5File(file: HFUploader.File, callback: Function) {
 export const preproccessFile = f => {
   return new Promise(resolve => {
     const file: HFUploader.File = fileToObject(f)
-
-    if (!file.md5_file) {
-      md5File(f, md5 => (file.md5_file = md5))
-    }
-
-    if (
+    const unPreview =
       typeof document === 'undefined' ||
       typeof window === 'undefined' ||
       !FileReader ||
@@ -170,21 +158,31 @@ export const preproccessFile = f => {
       !(file.originFile instanceof File) ||
       file.thumbUrl !== undefined ||
       file.mime_type.indexOf('image') === -1
-    ) {
-      resolve(file)
+
+    function preview(f) {
+      f.thumbUrl = ''
+      getImgPreview(
+        f.originFile,
+        (previewDataUrl, width, height, aspect, value = 1) => {
+          f.thumbUrl = previewDataUrl
+          f.width = width
+          f.height = height
+          f.aspect = aspect
+          f.transform = rotation[value]
+          resolve(f)
+        }
+      )
     }
 
-    file.thumbUrl = ''
-    getImgPreview(
-      file.originFile,
-      (previewDataUrl, width, height, aspect, value = 1) => {
-        file.thumbUrl = previewDataUrl
-        file.width = width
-        file.height = height
-        file.aspect = aspect
-        file.transform = rotation[value]
-        resolve(file)
-      }
-    )
+    if (!file.md5_file) {
+      md5File(f, md5 => {
+        file.md5_file = md5
+        if (unPreview) {
+          resolve(file)
+        } else {
+          preview(file)
+        }
+      })
+    }
   })
 }
