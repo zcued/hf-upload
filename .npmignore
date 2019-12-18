@@ -11,3 +11,4 @@ webpack.config.js
 docs
 example
 build
+dist
