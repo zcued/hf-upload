@@ -119,7 +119,8 @@ export default class Upload {
               })
               .catch(err => {
                 this.file.status = 'error'
-                this.file.errorMessage = this.options.errorText
+                this.file.errorMessage =
+                  typeof err === 'string' ? err : this.options.errorText
                 this.onFailed(this.file)
                 reject(err)
               })
