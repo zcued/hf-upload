@@ -112,12 +112,11 @@ const getImgPreview = (file, callback) => {
   reader.readAsArrayBuffer(file)
 }
 
-function md5File(file: HFUploader.File, callback: Function) {
-  const size = file.file_size
+function md5File(file: any, callback: Function) {
   const proto: any = File.prototype
   const blobSlice = proto.slice || proto.mozSlice || proto.webkitSlice,
     chunkSize = 2097152, // Read in chunks of 2MB
-    chunks = Math.ceil(size / chunkSize),
+    chunks = Math.ceil(file.size / chunkSize),
     spark = new SparkMD5.ArrayBuffer(),
     fileReader = new FileReader()
   let currentChunk = 0
