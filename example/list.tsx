@@ -5,7 +5,7 @@ export default memo(function List({
   fileList,
   onAbort,
   reUpload,
-  onDelete
+  onDelete,
 }: {
   fileList: Array<any>
   onAbort: Function
@@ -14,19 +14,23 @@ export default memo(function List({
 }) {
   const [isBreak, setIsBreak] = useState(false)
 
-  const handleReupload = uid => {
+  const handleReupload = (uid) => {
     reUpload(uid)
     setIsBreak(false)
   }
 
-  const handleAbort = uid => {
+  const handleAbort = (uid) => {
     onAbort(uid)
     setIsBreak(true)
   }
 
-  const _renderUploadStatus = file => {
+  const _renderUploadStatus = (file) => {
     if (file.percent === 100) {
       return <span>上传成功</span>
+    }
+
+    if (file.pretreatment) {
+      return <span>正在处理中</span>
     }
 
     if (file.status === 'error' && file.errorMessage) {
@@ -57,7 +61,7 @@ export default memo(function List({
 
   return (
     <UploadList>
-      {fileList.map(file => (
+      {fileList.map((file) => (
         <div key={file.uid} className="item">
           <div className="row">
             <span className="name" title={file.name}>
@@ -138,7 +142,7 @@ function Progress({ percent }: { percent: number }) {
       style={{
         backgroundColor: '#ddd',
         height: strokeWidth,
-        borderRadius: strokeWidth / 2
+        borderRadius: strokeWidth / 2,
       }}
     >
       <span
@@ -146,7 +150,7 @@ function Progress({ percent }: { percent: number }) {
         style={{
           backgroundColor: '#678294',
           width: `${percent}%`,
-          borderRadius: strokeWidth / 2
+          borderRadius: strokeWidth / 2,
         }}
       />
     </StyledProgress>
