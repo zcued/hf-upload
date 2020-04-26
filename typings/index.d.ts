@@ -45,5 +45,7 @@ declare namespace HFUploader {
     md5_file?: string
     /** 后缀 */
     extension?: string
+    /** 预处理中 */
+    pretreatment?: boolean
   }
 }

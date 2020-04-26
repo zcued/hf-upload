@@ -1,6 +1,12 @@
 import PQueue from './p-queue'
 import Upload from './upload'
-import { updateFileLists, deleteFile, deleteId, preproccessFile } from './util'
+import {
+  updateFileLists,
+  deleteFile,
+  deleteId,
+  preproccessFile,
+  fileToObject,
+} from './util'
 import defaultOptions from './default'
 
 interface Info {
@@ -55,13 +61,13 @@ export default class HFUploader {
     onFailed,
     onComplete,
     afterUpload,
-    beforeUpload
+    beforeUpload,
   }: Props) {
     this.map = {}
     this.fileList = files || []
     this.params = { ...params }
     this.queue = new PQueue({
-      concurrency: options.concurrency || defaultOptions.concurrency
+      concurrency: options.concurrency || defaultOptions.concurrency,
     })
 
     this.options = { ...defaultOptions, ...options }
@@ -75,7 +81,7 @@ export default class HFUploader {
   }
 
   // 更新参数
-  updateParams = params => {
+  updateParams = (params) => {
     this.params = { ...params }
 
     for (let uid in this.map) {
@@ -134,7 +140,7 @@ export default class HFUploader {
 
   // 开始上传
   start = (files: Array<HFUploader.File>) => {
-    const addFile = file => {
+    const addFile = (file) => {
       this.queue.add(
         () => {
           const upload = new Upload({
@@ -144,7 +150,7 @@ export default class HFUploader {
             onChange: this.handleChange,
             onSucceed: this.handleSucceed,
             onFailed: this.handleFailed,
-            afterUpload: this.afterUpload
+            afterUpload: this.afterUpload,
           })
           this.map[file.uid] = upload
           return upload.startUpload()
@@ -153,10 +159,14 @@ export default class HFUploader {
       )
     }
 
-    files.forEach(f => {
+    files.forEach((f) => {
+      const objFile = fileToObject(f)
+      objFile.pretreatment = true
+      this.handleChange(objFile)
       // 预处理 计算md5 width height aspect url...
-      preproccessFile(f)
+      preproccessFile(objFile)
         .then((file: HFUploader.File) => {
+          file.pretreatment = false
           this.handleChange(file)
           const before = this.beforeUpload && this.beforeUpload(file)
           if (before && before.then) {
@@ -164,7 +174,7 @@ export default class HFUploader {
               .then(() => {
                 addFile(file)
               })
-              .catch(e => {
+              .catch((e) => {
                 file.status = 'error'
                 file.errorMessage = typeof e === 'string' ? e : 'error'
                 this.handleFailed(file)

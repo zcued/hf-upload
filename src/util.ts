@@ -5,17 +5,17 @@ export function noop() {
 }
 
 export const updateFileLists = (file, fileLists) => {
-  const i = fileLists.findIndex(_ => _.uid === file.uid)
+  const i = fileLists.findIndex((_) => _.uid === file.uid)
   i > -1 ? (fileLists[i] = { ...file }) : fileLists.push(file)
   return fileLists
 }
 
 export const deleteFile = (uid, fileLists) => {
-  return fileLists.filter(_ => _.uid !== uid)
+  return fileLists.filter((_) => _.uid !== uid)
 }
 
 export const deleteId = (uid, ids) => {
-  return ids.filter(_ => _ !== uid)
+  return ids.filter((_) => _ !== uid)
 }
 
 export function getUid() {
@@ -41,7 +41,7 @@ export function fileToObject(file: any) {
     percent: percent || 0,
     originFile: file,
     extension: getFileExt(name).toLowerCase(),
-    ...rest
+    ...rest,
   }
 }
 
@@ -49,7 +49,7 @@ const rotation = {
   1: 'rotate(0deg)',
   3: 'rotate(180deg)',
   6: 'rotate(90deg)',
-  8: 'rotate(270deg)'
+  8: 'rotate(270deg)',
 }
 
 const getImgPreview = (file, callback) => {
@@ -121,7 +121,7 @@ function md5File(file: any, callback: Function) {
     fileReader = new FileReader()
   let currentChunk = 0
 
-  fileReader.onload = e => {
+  fileReader.onload = (e) => {
     spark.append(e.target.result) // Append array buffer
     currentChunk++
     if (currentChunk < chunks) {
@@ -131,7 +131,7 @@ function md5File(file: any, callback: Function) {
     }
   }
 
-  fileReader.onerror = function() {
+  fileReader.onerror = function () {
     callback('')
     throw new TypeError('md5: something went wrong ')
   }
@@ -147,9 +147,8 @@ function md5File(file: any, callback: Function) {
   loadNext()
 }
 
-export const preproccessFile = f => {
-  return new Promise(resolve => {
-    const file: HFUploader.File = fileToObject(f)
+export const preproccessFile = (file) => {
+  return new Promise((resolve) => {
     const unPreview =
       typeof document === 'undefined' ||
       typeof window === 'undefined' ||
@@ -175,7 +174,7 @@ export const preproccessFile = f => {
     }
 
     if (!file.md5_file) {
-      md5File(f, md5 => {
+      md5File(file.originFile, (md5) => {
         file.md5_file = md5
         if (unPreview) {
           resolve(file)
