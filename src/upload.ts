@@ -149,13 +149,21 @@ export default class Upload {
           // 参数过期
           if (isParamsExpired) {
             this.uploadFileClient = null
-            const fn = this.needUpdateParams && this.needUpdateParams(this.file)
-            if (fn && fn.then) {
-              fn.then(() => this.startUpload())
+            this.retryCount++
+            if (this.retryCount < this.retryCountMax) {
+              const fn =
+                this.needUpdateParams && this.needUpdateParams(this.file)
+              if (fn && fn.then) {
+                fn.then(() => this.startUpload())
+              } else {
+                this.startUpload()
+              }
             } else {
-              this.startUpload()
+              this.file.status = 'error'
+              this.file.errorMessage = 'params is expired'
+              this.onFailed(this.file)
+              reject(err)
             }
-
             return
           }
 
@@ -171,7 +179,7 @@ export default class Upload {
               this.uploadFile('')
             } else {
               this.file.status = 'error'
-              this.file.errorMessage = this.options.errorText
+              this.file.errorMessage = 'time out'
               this.onFailed(this.file)
               reject(err)
             }

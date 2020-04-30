@@ -19,8 +19,16 @@ export const deleteId = (uid, ids) => {
 }
 
 export function getUid() {
-  return `hf-upload-${new Date().valueOf()}`
+  let count = 0
+
+  function getkey() {
+    return `hf-upload-${new Date().valueOf()}+${count++}`
+  }
+
+  return getkey
 }
+
+const uid = getUid()
 
 export function getFileExt(fileName: string): string {
   if (!fileName.includes('.')) {
@@ -34,7 +42,7 @@ export function fileToObject(file: any) {
   const { name, size, type, percent, ...rest } = file
 
   return {
-    uid: getUid(),
+    uid: uid(),
     name: name,
     file_size: size,
     mime_type: type || 'application/octet-stream', // application/octet-stream 为通用的mime_type
