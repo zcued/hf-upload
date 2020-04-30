@@ -16,6 +16,8 @@ interface Props {
   onFailed?: (file: HFUploader.File) => void
   /** 上传后处理 */
   afterUpload?: Function
+  /** 参数过期 需要更新参数 */
+  needUpdateParams?: Function
 }
 
 export default class Upload {
@@ -32,6 +34,7 @@ export default class Upload {
   onSucceed: (file: HFUploader.File) => void
   onFailed: (file: HFUploader.File) => void
   afterUpload: Function
+  needUpdateParams: Function
 
   constructor({
     file,
@@ -40,7 +43,8 @@ export default class Upload {
     onChange,
     onSucceed,
     onFailed,
-    afterUpload
+    afterUpload,
+    needUpdateParams,
   }: Props) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
@@ -61,9 +65,10 @@ export default class Upload {
     this.onSucceed = onSucceed
     this.onFailed = onFailed
     this.afterUpload = afterUpload
+    this.needUpdateParams = needUpdateParams
   }
 
-  uploadFile = client => {
+  uploadFile = (client) => {
     if (
       !this.uploadFileClient ||
       Object.keys(this.uploadFileClient).length === 0
@@ -77,12 +82,12 @@ export default class Upload {
         ...this.file,
         percent: p * 99,
         status: 'uploading',
-        errorMessage: ''
+        errorMessage: '',
       }
       this.onChange(this.file)
     }
 
-    const finish = f => {
+    const finish = (f) => {
       this.file.status = 'uploaded'
       this.file.percent = 100
       this.onSucceed(f)
@@ -96,8 +101,8 @@ export default class Upload {
       mime: this.file.mime_type,
       partSize: this.partSize * 1024,
       headers: {
-        'content-disposition': `attachment; filename="${fileName}"`
-      }
+        'content-disposition': `attachment; filename="${fileName}"`,
+      },
     }
 
     if (this.currentCheckpoint) {
@@ -107,7 +112,7 @@ export default class Upload {
     return new Promise((resolve, reject) => {
       this.uploadFileClient
         .multipartUpload(key, this.file.originFile, opts)
-        .then(res => {
+        .then((res) => {
           this.file.response = res
           const after = this.afterUpload && this.afterUpload(this.file)
 
@@ -117,7 +122,7 @@ export default class Upload {
                 finish(this.file)
                 resolve()
               })
-              .catch(err => {
+              .catch((err) => {
                 this.file.status = 'error'
                 this.file.errorMessage =
                   typeof err === 'string' ? err : this.options.errorText
@@ -129,7 +134,7 @@ export default class Upload {
             resolve()
           }
         })
-        .catch(err => {
+        .catch((err) => {
           // 暂停
           if (this.uploadFileClient && this.uploadFileClient.isCancel()) {
             return
@@ -144,7 +149,13 @@ export default class Upload {
           // 参数过期
           if (isParamsExpired) {
             this.uploadFileClient = null
-            this.startUpload()
+            const fn = this.needUpdateParams && this.needUpdateParams(this.file)
+            if (fn && fn.then) {
+              fn.then(() => this.startUpload())
+            } else {
+              this.startUpload()
+            }
+
             return
           }
 
@@ -175,7 +186,7 @@ export default class Upload {
     })
   }
 
-  updateParams = params => {
+  updateParams = (params) => {
     this.params = { ...params }
   }
 
@@ -183,7 +194,7 @@ export default class Upload {
     const applyTokenDo = (func: any) => {
       const client = new OSS({
         timeout: this.timeout,
-        ...this.params
+        ...this.params,
       })
 
       return func(client)
