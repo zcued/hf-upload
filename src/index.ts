@@ -166,8 +166,6 @@ export default class HFUploader {
     }
 
     const preproccess = (f) => {
-      f.status = 'waiting'
-      this.handleChange(f)
       // 预处理 计算md5 width height aspect url...
       preproccessFile(f)
         .then((resFile: HFUploader.File) => {
@@ -180,6 +178,8 @@ export default class HFUploader {
 
     files.forEach((f) => {
       const objFile = fileToObject(f)
+      objFile.status = 'waiting'
+      this.handleChange(objFile)
       const before = this.beforeUpload && this.beforeUpload(objFile)
       if (before && before.then) {
         before
