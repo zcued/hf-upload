@@ -26,6 +26,8 @@ interface Props {
   beforeUpload?: Function
   /** afterUpload */
   afterUpload?: Function
+  /** needUpdateParams */
+  needUpdateParams?: Function
   /** file change */
   onChange?: ({ file, fileList }: Info) => void
   /** file Succeed */
@@ -43,6 +45,7 @@ export default class HFUploader {
   queue: PQueue
   options: HFUploader.Options
   fileList: Array<HFUploader.File> = []
+  needUpdateParams?: Function
   onStart?: Function
   afterUpload?: Function
   beforeUpload?: Function
@@ -62,6 +65,7 @@ export default class HFUploader {
     onComplete,
     afterUpload,
     beforeUpload,
+    needUpdateParams,
   }: Props) {
     this.map = {}
     this.fileList = files || []
@@ -78,6 +82,7 @@ export default class HFUploader {
     this.onComplete = onComplete
     this.afterUpload = afterUpload
     this.beforeUpload = beforeUpload
+    this.needUpdateParams = needUpdateParams
   }
 
   // 更新参数
@@ -151,6 +156,7 @@ export default class HFUploader {
             onSucceed: this.handleSucceed,
             onFailed: this.handleFailed,
             afterUpload: this.afterUpload,
+            needUpdateParams: this.needUpdateParams,
           })
           this.map[file.uid] = upload
           return upload.startUpload()
@@ -159,33 +165,35 @@ export default class HFUploader {
       )
     }
 
-    files.forEach((f) => {
-      const objFile = fileToObject(f)
-      objFile.pretreatment = true
-      this.handleChange(objFile)
+    const preproccess = (f) => {
+      f.status = 'waiting'
+      this.handleChange(f)
       // 预处理 计算md5 width height aspect url...
-      preproccessFile(objFile)
-        .then((file: HFUploader.File) => {
-          file.pretreatment = false
-          this.handleChange(file)
-          const before = this.beforeUpload && this.beforeUpload(file)
-          if (before && before.then) {
-            before
-              .then(() => {
-                addFile(file)
-              })
-              .catch((e) => {
-                file.status = 'error'
-                file.errorMessage = typeof e === 'string' ? e : 'error'
-                this.handleFailed(file)
-              })
-          } else {
-            addFile(file)
-          }
+      preproccessFile(f)
+        .then((resFile: HFUploader.File) => {
+          addFile(resFile)
         })
         .catch(() => {
           throw new TypeError('preproccess file error')
         })
+    }
+
+    files.forEach((f) => {
+      const objFile = fileToObject(f)
+      const before = this.beforeUpload && this.beforeUpload(objFile)
+      if (before && before.then) {
+        before
+          .then(() => {
+            preproccess(objFile)
+          })
+          .catch((e) => {
+            objFile.status = 'error'
+            objFile.errorMessage = typeof e === 'string' ? e : 'error'
+            this.handleFailed(objFile)
+          })
+      } else {
+        preproccess(objFile)
+      }
     })
   }
 

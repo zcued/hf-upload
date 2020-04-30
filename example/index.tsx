@@ -10,7 +10,7 @@ export default function Example() {
   const [fileList, setFileList] = useState([])
   const [status, setStatus] = useState('waiting')
 
-  const createUploader = params => {
+  const createUploader = (params) => {
     uploader.current = new HFUpload({
       params,
       onChange: ({ fileList: nextFileList }) => {
@@ -21,12 +21,27 @@ export default function Example() {
       },
       onFailed: ({ fileList: nextFileList }) => {
         setFileList([...nextFileList])
-      }
+      },
+      needUpdateParams: (file) => {
+        return new Promise((resolve, reject) => {
+          // 重新请求参数 updateParams
+          resolve()
+        })
+      },
+      beforeUpload: (file) => {
+        return new Promise((resolve, reject) => {
+          const isOutRange = file.file_size / 1024 / 1024 > 5
+          if (isOutRange) {
+            return reject('上传文件过大')
+          }
+          resolve()
+        })
+      },
     })
     setStatus('start')
   }
 
-  const startUpload = files => {
+  const startUpload = (files) => {
     uploader.current.add(files)
   }
 
@@ -38,9 +53,9 @@ export default function Example() {
         <UploadButton onChange={startUpload} />
         <List
           fileList={fileList}
-          onAbort={uid => uploader.current.abort(uid)}
-          reUpload={uid => uploader.current.reupload(uid)}
-          onDelete={uid => uploader.current.delete(uid)}
+          onAbort={(uid) => uploader.current.abort(uid)}
+          reUpload={(uid) => uploader.current.reupload(uid)}
+          onDelete={(uid) => uploader.current.delete(uid)}
         />
       </>
     )

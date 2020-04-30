@@ -29,7 +29,7 @@ export default memo(function List({
       return <span>上传成功</span>
     }
 
-    if (file.pretreatment) {
+    if (file.status === 'waiting') {
       return <span>正在处理中</span>
     }
 
