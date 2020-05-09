@@ -22,7 +22,7 @@ export function getUid() {
   let count = 0
 
   function getkey() {
-    return `hf-upload-${new Date().valueOf()}+${count++}`
+    return `hf-upload-${new Date().valueOf()}-${count++}`
   }
 
   return getkey
@@ -181,15 +181,24 @@ export const preproccessFile = (file) => {
       )
     }
 
-    if (!file.md5_file) {
-      md5File(file.originFile, (md5) => {
-        file.md5_file = md5
-        if (unPreview) {
-          resolve(file)
-        } else {
-          preview(file)
-        }
-      })
+    if (unPreview) {
+      resolve(file)
+    } else {
+      preview(file)
     }
+  })
+}
+
+export function getMd5(file) {
+  return new Promise((resolve, reject) => {
+    md5File(file.originFile, (md5) => {
+      file.md5_file = md5
+
+      if (md5) {
+        resolve(file)
+      }
+
+      reject(file)
+    })
   })
 }

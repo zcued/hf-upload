@@ -4,6 +4,7 @@ import {
   updateFileLists,
   deleteFile,
   deleteId,
+  getMd5,
   preproccessFile,
   fileToObject,
 } from './util'
@@ -165,9 +166,9 @@ export default class HFUploader {
       )
     }
 
-    const preproccess = (f) => {
-      // 预处理 计算md5 width height aspect url...
-      preproccessFile(f)
+    // 计算md5
+    const md5File = (f) => {
+      getMd5(f)
         .then((resFile: HFUploader.File) => {
           addFile(resFile)
         })
@@ -180,20 +181,23 @@ export default class HFUploader {
       const objFile = fileToObject(f)
       objFile.status = 'waiting'
       this.handleChange(objFile)
-      const before = this.beforeUpload && this.beforeUpload(objFile)
-      if (before && before.then) {
-        before
-          .then(() => {
-            preproccess(objFile)
-          })
-          .catch((e) => {
-            objFile.status = 'error'
-            objFile.errorMessage = typeof e === 'string' ? e : 'error'
-            this.handleFailed(objFile)
-          })
-      } else {
-        preproccess(objFile)
-      }
+      // 计算 width height aspect transform thumbUrl
+      preproccessFile(objFile).then(() => {
+        const before = this.beforeUpload && this.beforeUpload(objFile)
+        if (before && before.then) {
+          before
+            .then(() => {
+              md5File(objFile)
+            })
+            .catch((e) => {
+              objFile.status = 'error'
+              objFile.errorMessage = typeof e === 'string' ? e : 'error'
+              this.handleFailed(objFile)
+            })
+        } else {
+          md5File(objFile)
+        }
+      })
     })
   }
 
