@@ -10,7 +10,7 @@ export default memo(function CreateOss({ onSubmit }: { onSubmit: Function }) {
   }
 
   const handleClick = () => {
-    const values = Object.values(options).filter(_ => _)
+    const values = Object.values(options).filter((_) => _)
     if (values.length !== 5) {
       return alert('请输入所有参数！')
     }
@@ -23,27 +23,27 @@ export default memo(function CreateOss({ onSubmit }: { onSubmit: Function }) {
       <Input
         type="text"
         placeholder="请输入accessKeyId"
-        onBlur={e => handleChange(e, 'accessKeyId')}
+        onBlur={(e) => handleChange(e, 'accessKeyId')}
       />
       <Input
         type="text"
         placeholder="请输入accessKeySecret"
-        onBlur={e => handleChange(e, 'accessKeySecret')}
+        onBlur={(e) => handleChange(e, 'accessKeySecret')}
       />
       <Input
         type="text"
         placeholder="请输入stsToken"
-        onBlur={e => handleChange(e, 'stsToken')}
+        onBlur={(e) => handleChange(e, 'stsToken')}
       />
       <Input
         type="text"
         placeholder="请输入bucket"
-        onBlur={e => handleChange(e, 'bucket')}
+        onBlur={(e) => handleChange(e, 'bucket')}
       />
       <Input
         type="text"
         placeholder="请输入region"
-        onBlur={e => handleChange(e, 'region')}
+        onBlur={(e) => handleChange(e, 'region')}
       />
       <Button onClick={handleClick}>创 建</Button>
     </Wrap>
