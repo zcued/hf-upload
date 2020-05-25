@@ -120,41 +120,6 @@ const getImgPreview = (file, callback) => {
   reader.readAsArrayBuffer(file)
 }
 
-function md5File(file: any, callback: Function) {
-  const proto: any = File.prototype
-  const blobSlice = proto.slice || proto.mozSlice || proto.webkitSlice,
-    chunkSize = 2097152, // Read in chunks of 2MB
-    chunks = Math.ceil(file.size / chunkSize),
-    spark = new SparkMD5.ArrayBuffer(),
-    fileReader = new FileReader()
-  let currentChunk = 0
-
-  fileReader.onload = (e) => {
-    spark.append(e.target.result) // Append array buffer
-    currentChunk++
-    if (currentChunk < chunks) {
-      loadNext()
-    } else {
-      callback(spark.end())
-    }
-  }
-
-  fileReader.onerror = function () {
-    callback('')
-    throw new TypeError('md5: something went wrong ')
-  }
-
-  function loadNext() {
-    var start = currentChunk * chunkSize,
-      end =
-        start + chunkSize >= file.file_size ? file.file_size : start + chunkSize
-
-    fileReader.readAsArrayBuffer(blobSlice.call(file, start, end))
-  }
-
-  loadNext()
-}
-
 export const preproccessFile = (file) => {
   return new Promise((resolve) => {
     const unPreview =
@@ -186,19 +151,5 @@ export const preproccessFile = (file) => {
     } else {
       preview(file)
     }
-  })
-}
-
-export function getMd5(file) {
-  return new Promise((resolve, reject) => {
-    md5File(file.originFile, (md5) => {
-      file.md5_file = md5
-
-      if (md5) {
-        resolve(file)
-      }
-
-      reject(file)
-    })
   })
 }
