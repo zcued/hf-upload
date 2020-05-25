@@ -1,5 +1,4 @@
 import React, { memo, useState } from 'react'
-import styled from 'styled-components'
 
 export default memo(function List({
   fileList,
@@ -60,7 +59,7 @@ export default memo(function List({
   }
 
   return (
-    <UploadList>
+    <div className="upload-list">
       {fileList.map((file) => (
         <div key={file.uid} className="item">
           <div className="row">
@@ -76,50 +75,9 @@ export default memo(function List({
           <Progress percent={file.percent} />
         </div>
       ))}
-    </UploadList>
+    </div>
   )
 })
-
-const UploadList = styled.div`
-  width: 100%;
-  height: 70%;
-  overflow-y: auto;
-  margin: 40px auto;
-
-  .item {
-    margin-bottom: 24px;
-
-    .row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      span {
-        display: inline-block;
-        color: white;
-        font-size: 14px;
-      }
-
-      .name {
-        width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .error {
-        color: #790707;
-      }
-
-      .action {
-        cursor: pointer;
-        :hover {
-          opacity: 0.8;
-        }
-      }
-    }
-  }
-`
 
 const getFileSize = (bytes, decimals = 2): string => {
   if (!bytes) {
@@ -138,7 +96,8 @@ const getFileSize = (bytes, decimals = 2): string => {
 function Progress({ percent }: { percent: number }) {
   const strokeWidth = 3
   return (
-    <StyledProgress
+    <div
+      className="progress"
       style={{
         backgroundColor: '#ddd',
         height: strokeWidth,
@@ -153,21 +112,6 @@ function Progress({ percent }: { percent: number }) {
           borderRadius: strokeWidth / 2,
         }}
       />
-    </StyledProgress>
+    </div>
   )
 }
-
-const StyledProgress = styled.div`
-  width: 100%;
-  position: relative;
-  margin-top: 16px;
-
-  .filler {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    border-radius: inherit;
-    transition: width 0.2s ease-in;
-  }
-`

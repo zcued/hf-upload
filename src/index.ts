@@ -4,11 +4,11 @@ import {
   updateFileLists,
   deleteFile,
   deleteId,
-  getMd5,
   preproccessFile,
   fileToObject,
 } from './util'
 import defaultOptions from './default'
+import Worker from './file.worker'
 
 interface Info {
   file?: HFUploader.File
@@ -168,13 +168,13 @@ export default class HFUploader {
 
     // 计算md5
     const md5File = (f) => {
-      getMd5(f)
-        .then((resFile: HFUploader.File) => {
-          addFile(resFile)
-        })
-        .catch(() => {
-          throw new TypeError('preproccess file error')
-        })
+      let myWorker = new Worker()
+      myWorker.postMessage({ file: f.originFile })
+      myWorker.onmessage = (e) => {
+        f.md5_file = e.data
+        addFile(f)
+        myWorker.terminate()
+      }
     }
 
     files.forEach((f) => {
