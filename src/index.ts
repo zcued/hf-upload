@@ -168,7 +168,7 @@ export default class HFUploader {
 
     // 计算md5
     const md5File = (f) => {
-      let myWorker = new Worker()
+      const myWorker = new Worker()
       myWorker.postMessage({ file: f.originFile })
       myWorker.onmessage = (e) => {
         f.md5_file = e.data
