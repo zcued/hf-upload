@@ -2,7 +2,7 @@ import SparkMD5 from 'spark-md5'
 
 onmessage = function (e) {
   function md5File(file) {
-    const proto = File.prototype
+    const proto = Object.getPrototypeOf(file)
     const blobSlice = proto.slice || proto.mozSlice || proto.webkitSlice,
       chunkSize = 2097152, // Read in chunks of 2MB
       chunks = Math.ceil(file.size / chunkSize),
