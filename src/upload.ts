@@ -114,6 +114,7 @@ export default class Upload {
         .multipartUpload(key, this.file.originFile, opts)
         .then((res) => {
           this.file.response = res
+          this.currentCheckpoint = null
           const after = this.afterUpload && this.afterUpload(this.file)
 
           if (after && after.then) {
