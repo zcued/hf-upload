@@ -12,7 +12,7 @@ import Worker from './file.worker'
 
 interface Info {
   file?: HFUploader.File
-  fileList: Array<HFUploader.File>
+  fileList?: Array<HFUploader.File>
 }
 
 interface Props {

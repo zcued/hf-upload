@@ -77,9 +77,14 @@ const getImgPreview = (file, callback) => {
     const scanner = new DataView(readerResult)
     let idx = 0
     let value = 1 // Non-rotated is the default
+    let maxBytes = scanner.byteLength
+
+    // 不是 JPEG 文件
+    if (scanner.getUint16(idx, false) != 0xffd8) {
+      maxBytes = 0
+    }
 
     idx += 2
-    let maxBytes = scanner.byteLength
     while (idx < maxBytes - 2) {
       const uint16 = scanner.getUint16(idx)
       idx += 2
