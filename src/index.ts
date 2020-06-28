@@ -8,7 +8,6 @@ import {
   fileToObject,
 } from './util'
 import defaultOptions from './default'
-import Worker from './file.worker'
 
 interface Info {
   file?: HFUploader.File
@@ -167,8 +166,9 @@ export default class HFUploader {
     }
 
     // 计算md5
-    const md5File = (f) => {
-      const myWorker = new Worker()
+    const md5File = async (f) => {
+      const Worker = await import('./file.worker.js')
+      const myWorker = new Worker.default()
       myWorker.postMessage({ file: f.originFile })
       myWorker.onmessage = (e) => {
         f.md5_file = e.data
