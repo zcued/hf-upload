@@ -24,7 +24,7 @@ onmessage = function (e) {
     fileReader.onerror = function () {
       postMessage('')
       close()
-      throw new TypeError('md5: something went wrong ')
+      throw fileReader.error
     }
 
     function loadNext() {
