@@ -24,7 +24,7 @@ onmessage = function (e) {
     fileReader.onerror = function () {
       postMessage('')
       close()
-      throw new TypeError(`Failed to read file!\n\n${fileReader.error}`)
+      throw new TypeError(fileReader.error)
     }
 
     function loadNext() {
