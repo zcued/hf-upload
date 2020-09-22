@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react'
-import HFUpload from '../lib'
-import UploadButton from './upload'
+import React, { useState, useRef, memo } from 'react'
+import HFUpload from '../../src/index'
+import UploadButton from '../upload'
 import CreateOss from './create'
-import List from './list'
-import './style.scss'
+import List from '../list'
+import '../style.scss'
 
-export default function Example() {
+function Example() {
   const uploader = useRef(null)
   const [fileList, setFileList] = useState([])
   const [status, setStatus] = useState('waiting')
@@ -63,3 +63,5 @@ export default function Example() {
 
   return <div className="wrap">{child}</div>
 }
+
+export default memo(Example)

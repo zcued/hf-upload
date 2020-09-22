@@ -6,11 +6,13 @@ const devConfig = {
   devtool: 'cheap-module-eval-source-map',
   entry: './index.tsx',
   output: {
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   devServer: {
-    port: 8901
-  }
+    port: 8901,
+    inline: true,
+    historyApiFallback: true,
+  },
 }
 
 module.exports = merge(commonConfig, devConfig)

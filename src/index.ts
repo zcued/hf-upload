@@ -10,12 +10,12 @@ import {
 import defaultOptions from './default'
 
 interface Info {
-  file?: HFUploader.File
-  fileList?: Array<HFUploader.File>
+  file?: HFUploader.UploadFile
+  fileList?: Array<HFUploader.UploadFile>
 }
 
 interface Props {
-  files?: Array<HFUploader.File>
+  files?: Array<HFUploader.UploadFile>
   /** 配置项 */
   options?: HFUploader.Options
   /** 创建OSS参数 */
@@ -44,7 +44,7 @@ export default class HFUploader {
   params: any
   queue: PQueue
   options: HFUploader.Options
-  fileList: Array<HFUploader.File> = []
+  fileList: Array<HFUploader.UploadFile> = []
   needUpdateParams?: Function
   onStart?: Function
   afterUpload?: Function
@@ -97,7 +97,7 @@ export default class HFUploader {
   }
 
   // 添加
-  add = (files: Array<HFUploader.File>) => {
+  add = (files: Array<HFUploader.UploadFile>) => {
     if (this.onStart) {
       this.onStart()
     }
@@ -144,11 +144,11 @@ export default class HFUploader {
   }
 
   // 开始上传
-  start = (files: Array<HFUploader.File>) => {
+  start = (files: Array<HFUploader.UploadFile>) => {
     const addFile = (file) => {
       this.queue.add(
         () => {
-          const upload = new Upload({
+          const parameter = {
             file,
             params: this.params,
             options: this.options,
@@ -157,7 +157,8 @@ export default class HFUploader {
             onFailed: this.handleFailed,
             afterUpload: this.afterUpload,
             needUpdateParams: this.needUpdateParams,
-          })
+          }
+          const upload = Upload(file.type, parameter)
           this.map[file.uid] = upload
           return upload.startUpload()
         },
@@ -201,7 +202,7 @@ export default class HFUploader {
     })
   }
 
-  handleChange = (file: HFUploader.File) => {
+  handleChange = (file: HFUploader.UploadFile) => {
     const { fileList, onChange } = this
     this.fileList = updateFileLists(file, fileList)
     if (onChange) {
@@ -209,7 +210,7 @@ export default class HFUploader {
     }
   }
 
-  handleSucceed = (file: HFUploader.File) => {
+  handleSucceed = (file: HFUploader.UploadFile) => {
     const { fileList, onSucceed, checkComplete } = this
     this.fileList = updateFileLists(file, fileList)
     checkComplete(file.uid)
@@ -218,7 +219,7 @@ export default class HFUploader {
     }
   }
 
-  handleFailed = (file: HFUploader.File) => {
+  handleFailed = (file: HFUploader.UploadFile) => {
     const { fileList, onFailed, checkComplete } = this
     this.fileList = updateFileLists(file, fileList)
     checkComplete(file.uid)
