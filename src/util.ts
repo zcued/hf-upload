@@ -5,22 +5,30 @@ export function noop() {
 }
 
 export const updateFileLists = (file, fileLists) => {
-  const i = fileLists.findIndex(_ => _.uid === file.uid)
+  const i = fileLists.findIndex((_) => _.uid === file.uid)
   i > -1 ? (fileLists[i] = { ...file }) : fileLists.push(file)
   return fileLists
 }
 
 export const deleteFile = (uid, fileLists) => {
-  return fileLists.filter(_ => _.uid !== uid)
+  return fileLists.filter((_) => _.uid !== uid)
 }
 
 export const deleteId = (uid, ids) => {
-  return ids.filter(_ => _ !== uid)
+  return ids.filter((_) => _ !== uid)
 }
 
 export function getUid() {
-  return `hf-upload-${new Date().valueOf()}`
+  let count = 0
+
+  function getkey() {
+    return `hf-upload-${new Date().valueOf()}-${count++}`
+  }
+
+  return getkey
 }
+
+const uid = getUid()
 
 export function getFileExt(fileName: string): string {
   if (!fileName.includes('.')) {
@@ -34,14 +42,14 @@ export function fileToObject(file: any) {
   const { name, size, type, percent, ...rest } = file
 
   return {
-    uid: getUid(),
+    uid: uid(),
     name: name,
     file_size: size,
     mime_type: type || 'application/octet-stream', // application/octet-stream 为通用的mime_type
     percent: percent || 0,
     originFile: file,
     extension: getFileExt(name).toLowerCase(),
-    ...rest
+    ...rest,
   }
 }
 
@@ -49,7 +57,7 @@ const rotation = {
   1: 'rotate(0deg)',
   3: 'rotate(180deg)',
   6: 'rotate(90deg)',
-  8: 'rotate(270deg)'
+  8: 'rotate(270deg)',
 }
 
 const getImgPreview = (file, callback) => {
@@ -69,9 +77,14 @@ const getImgPreview = (file, callback) => {
     const scanner = new DataView(readerResult)
     let idx = 0
     let value = 1 // Non-rotated is the default
+    let maxBytes = scanner.byteLength
+
+    // 不是 JPEG 文件
+    if (scanner.getUint16(idx, false) != 0xffd8) {
+      maxBytes = 0
+    }
 
     idx += 2
-    let maxBytes = scanner.byteLength
     while (idx < maxBytes - 2) {
       const uint16 = scanner.getUint16(idx)
       idx += 2
@@ -112,44 +125,8 @@ const getImgPreview = (file, callback) => {
   reader.readAsArrayBuffer(file)
 }
 
-function md5File(file: HFUploader.File, callback: Function) {
-  const proto: any = File.prototype
-  const blobSlice = proto.slice || proto.mozSlice || proto.webkitSlice,
-    chunkSize = 2097152, // Read in chunks of 2MB
-    chunks = Math.ceil(file.file_size / chunkSize),
-    spark = new SparkMD5.ArrayBuffer(),
-    fileReader = new FileReader()
-  let currentChunk = 0
-
-  fileReader.onload = e => {
-    spark.append(e.target.result) // Append array buffer
-    currentChunk++
-    if (currentChunk < chunks) {
-      loadNext()
-    } else {
-      callback(spark.end())
-    }
-  }
-
-  fileReader.onerror = function() {
-    callback('')
-    throw new TypeError('md5: something went wrong ')
-  }
-
-  function loadNext() {
-    var start = currentChunk * chunkSize,
-      end =
-        start + chunkSize >= file.file_size ? file.file_size : start + chunkSize
-
-    fileReader.readAsArrayBuffer(blobSlice.call(file, start, end))
-  }
-
-  loadNext()
-}
-
-export const preproccessFile = f => {
-  return new Promise(resolve => {
-    const file: HFUploader.File = fileToObject(f)
+export const preproccessFile = (file) => {
+  return new Promise((resolve) => {
     const unPreview =
       typeof document === 'undefined' ||
       typeof window === 'undefined' ||
@@ -174,15 +151,10 @@ export const preproccessFile = f => {
       )
     }
 
-    if (!file.md5_file) {
-      md5File(f, md5 => {
-        file.md5_file = md5
-        if (unPreview) {
-          resolve(file)
-        } else {
-          preview(file)
-        }
-      })
+    if (unPreview) {
+      resolve(file)
+    } else {
+      preview(file)
     }
   })
 }

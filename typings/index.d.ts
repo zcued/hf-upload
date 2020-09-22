@@ -26,7 +26,7 @@ declare namespace HFUploader {
     /** 上传进度 0～1 */
     percent?: number
     /** 文件上传状态 */
-    status?: string
+    status?: 'waiting' | 'uploading' | 'uploaded' | 'error'
     /** response */
     response?: any
     /** 上传失败原因 */

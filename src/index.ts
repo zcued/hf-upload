@@ -1,11 +1,17 @@
 import PQueue from './p-queue'
 import Upload from './upload'
-import { updateFileLists, deleteFile, deleteId, preproccessFile } from './util'
+import {
+  updateFileLists,
+  deleteFile,
+  deleteId,
+  preproccessFile,
+  fileToObject,
+} from './util'
 import defaultOptions from './default'
 
 interface Info {
   file?: HFUploader.File
-  fileList: Array<HFUploader.File>
+  fileList?: Array<HFUploader.File>
 }
 
 interface Props {
@@ -20,6 +26,8 @@ interface Props {
   beforeUpload?: Function
   /** afterUpload */
   afterUpload?: Function
+  /** needUpdateParams */
+  needUpdateParams?: Function
   /** file change */
   onChange?: ({ file, fileList }: Info) => void
   /** file Succeed */
@@ -37,6 +45,7 @@ export default class HFUploader {
   queue: PQueue
   options: HFUploader.Options
   fileList: Array<HFUploader.File> = []
+  needUpdateParams?: Function
   onStart?: Function
   afterUpload?: Function
   beforeUpload?: Function
@@ -55,13 +64,14 @@ export default class HFUploader {
     onFailed,
     onComplete,
     afterUpload,
-    beforeUpload
+    beforeUpload,
+    needUpdateParams,
   }: Props) {
     this.map = {}
     this.fileList = files || []
     this.params = { ...params }
     this.queue = new PQueue({
-      concurrency: options.concurrency || defaultOptions.concurrency
+      concurrency: options.concurrency || defaultOptions.concurrency,
     })
 
     this.options = { ...defaultOptions, ...options }
@@ -72,10 +82,11 @@ export default class HFUploader {
     this.onComplete = onComplete
     this.afterUpload = afterUpload
     this.beforeUpload = beforeUpload
+    this.needUpdateParams = needUpdateParams
   }
 
   // 更新参数
-  updateParams = params => {
+  updateParams = (params) => {
     this.params = { ...params }
 
     for (let uid in this.map) {
@@ -134,7 +145,7 @@ export default class HFUploader {
 
   // 开始上传
   start = (files: Array<HFUploader.File>) => {
-    const addFile = file => {
+    const addFile = (file) => {
       this.queue.add(
         () => {
           const upload = new Upload({
@@ -144,7 +155,8 @@ export default class HFUploader {
             onChange: this.handleChange,
             onSucceed: this.handleSucceed,
             onFailed: this.handleFailed,
-            afterUpload: this.afterUpload
+            afterUpload: this.afterUpload,
+            needUpdateParams: this.needUpdateParams,
           })
           this.map[file.uid] = upload
           return upload.startUpload()
@@ -153,29 +165,39 @@ export default class HFUploader {
       )
     }
 
-    files.forEach(f => {
-      // 预处理 计算md5 width height aspect url...
-      preproccessFile(f)
-        .then((file: HFUploader.File) => {
-          this.handleChange(file)
-          const before = this.beforeUpload && this.beforeUpload(file)
-          if (before && before.then) {
-            before
-              .then(() => {
-                addFile(file)
-              })
-              .catch(e => {
-                file.status = 'error'
-                file.errorMessage = typeof e === 'string' ? e : 'error'
-                this.handleFailed(file)
-              })
-          } else {
-            addFile(file)
-          }
-        })
-        .catch(() => {
-          throw new TypeError('preproccess file error')
-        })
+    // 计算md5
+    const md5File = async (f) => {
+      const Worker = await import('./file.worker.js')
+      const myWorker = new Worker.default()
+      myWorker.postMessage({ file: f.originFile })
+      myWorker.onmessage = (e) => {
+        f.md5_file = e.data
+        addFile(f)
+        myWorker.terminate()
+      }
+    }
+
+    files.forEach((f) => {
+      const objFile = fileToObject(f)
+      objFile.status = 'waiting'
+      this.handleChange(objFile)
+      // 计算 width height aspect transform thumbUrl
+      preproccessFile(objFile).then(() => {
+        const before = this.beforeUpload && this.beforeUpload(objFile)
+        if (before && before.then) {
+          before
+            .then(() => {
+              md5File(objFile)
+            })
+            .catch((e) => {
+              objFile.status = 'error'
+              objFile.errorMessage = typeof e === 'string' ? e : 'error'
+              this.handleFailed(objFile)
+            })
+        } else {
+          md5File(objFile)
+        }
+      })
     })
   }
 
