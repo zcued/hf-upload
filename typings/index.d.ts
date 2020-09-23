@@ -10,6 +10,8 @@ declare namespace HFUploader {
     retryCountMax?: number
     /** 错误提示 */
     errorText?: string
+    /** 文件上传的方式 (ali|qiliu) */
+    uploadConfig?: { [key: string]: string }
   }
 
   interface UploadFile {
@@ -49,8 +51,6 @@ declare namespace HFUploader {
     oss_path?: string
     /** 文件所属类型 */
     type?: string
-    /** 文件上传的方式 (ali|qiliu) */
-    uploadConfig?: Object
   }
 
   interface UploadProps {

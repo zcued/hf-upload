@@ -12,10 +12,13 @@ function QiniuExample() {
 
   /** 允许的视频格式 */
   const UPLOAD_VIDEO_ACCEPTS = ['AVI', 'MOV', 'RMVB', 'RM', 'FLV', 'MP4', '3GP']
-
+  const options = {
+    uploadConfig: { video: 'qiniu' },
+  }
   const createUploader = (params) => {
     uploader.current = new HFUpload({
       params,
+      options,
       onChange: ({ fileList: nextFileList }) => {
         setFileList([...nextFileList])
       },
