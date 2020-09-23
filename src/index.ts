@@ -159,7 +159,7 @@ export default class HFUploader {
             afterUpload: this.afterUpload,
             needUpdateParams: this.needUpdateParams,
           }
-          const upload = Upload(file.type, parameter)
+          const upload = Upload(file.type, file.uploadConfig, parameter)
           this.map[file.uid] = upload
           return upload.startUpload()
         },

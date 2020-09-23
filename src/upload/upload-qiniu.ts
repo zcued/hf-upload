@@ -1,5 +1,6 @@
 import * as qiniu from 'qiniu-js'
 import { UploadStatus } from '../enums'
+import { CONCURRENCY } from '../constants'
 
 export default class QiniuUpload {
   params: HFUploader.UploadParams
@@ -52,13 +53,12 @@ export default class QiniuUpload {
     const key = `tmp/${this.file.uid}.${this.file.extension}`
     const putExtra = {
       fname: this.file.originFile.name,
+      // 分片上传的并发请求量
+      concurrentRequestLimit: CONCURRENCY,
     }
     const config: HFUploader.QiNiuUploadConfig = {
+      // 是否使用cdn 加速
       useCdnDomain: true,
-      checkByMD5: true,
-      forceDirect: false,
-      retryCount: this.retryCountMax,
-      chunkSize: this.partSize,
     }
 
     let opts = {
