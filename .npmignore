@@ -8,7 +8,4 @@ yarn.lock
 .eslintrc.js
 .gitignore
 webpack.config.js
-docs
 example
-build
-dist

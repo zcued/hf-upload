@@ -10,8 +10,7 @@ install:
   - yarn
 
 script:
-  - yarn run build
-  - yarn run build:docs
+  - yarn build
 
 branches:
   only:

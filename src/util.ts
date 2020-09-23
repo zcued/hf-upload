@@ -1,5 +1,3 @@
-import SparkMD5 from 'spark-md5'
-
 export function noop() {
   return null
 }

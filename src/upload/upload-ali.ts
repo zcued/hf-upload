@@ -1,22 +1,29 @@
 import OSS from 'ali-oss'
 import { MIN_PART_SIZE } from '../constants'
 import { UploadStatus } from '../enums'
+import {
+  UploadFile,
+  UploadOptions,
+  AliProps,
+  SingleFileFn,
+  PromiseFn,
+} from '../types'
 
 export default class AliUpload {
-  params: HFUploader.UploadParams
-  options: HFUploader.Options
+  params: Object
+  options: UploadOptions
   timeout: number
   partSize: number
   retryCount: number
   retryCountMax: number
-  file: HFUploader.UploadFile
+  file: UploadFile
   uploadFileClient: any
   currentCheckpoint: any
-  onChange: (file: HFUploader.UploadFile) => void
-  onSucceed: (file: HFUploader.UploadFile) => void
-  onFailed: (file: HFUploader.UploadFile) => void
-  afterUpload: Function
-  needUpdateParams: Function
+  onChange: SingleFileFn
+  onSucceed: SingleFileFn
+  onFailed: SingleFileFn
+  afterUpload: PromiseFn
+  needUpdateParams: PromiseFn
 
   constructor({
     file,
@@ -27,7 +34,7 @@ export default class AliUpload {
     onFailed,
     afterUpload,
     needUpdateParams,
-  }: HFUploader.UploadProps) {
+  }: AliProps) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
     }

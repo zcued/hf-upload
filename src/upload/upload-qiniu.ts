@@ -1,21 +1,29 @@
 import * as qiniu from 'qiniu-js'
 import { UploadStatus } from '../enums'
 import { CONCURRENCY } from '../constants'
+import {
+  UploadParams,
+  UploadOptions,
+  UploadFile,
+  Subscription,
+  QiniuProps,
+  QiNiuUploadConfig,
+} from '../types'
 
 export default class QiniuUpload {
-  params: HFUploader.UploadParams
-  options: HFUploader.Options
+  params: UploadParams
+  options: UploadOptions
   timeout: number
   partSize: number
   retryCount: number
   retryCountMax: number
-  file: HFUploader.UploadFile
-  onChange: (file: HFUploader.UploadFile) => void
-  onSucceed: (file: HFUploader.UploadFile) => void
-  onFailed: (file: HFUploader.UploadFile) => void
+  file: UploadFile
+  onChange: (file: UploadFile) => void
+  onSucceed: (file: UploadFile) => void
+  onFailed: (file: UploadFile) => void
   afterUpload: Function
   needUpdateParams: Function
-  currentSubscription: HFUploader.Subscription
+  currentSubscription: Subscription
 
   constructor({
     file,
@@ -26,7 +34,7 @@ export default class QiniuUpload {
     onFailed,
     afterUpload,
     needUpdateParams,
-  }: HFUploader.UploadProps) {
+  }: QiniuProps) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
     }
@@ -56,7 +64,7 @@ export default class QiniuUpload {
       // 分片上传的并发请求量
       concurrentRequestLimit: CONCURRENCY,
     }
-    const config: HFUploader.QiNiuUploadConfig = {
+    const config: QiNiuUploadConfig = {
       // 是否使用cdn 加速
       useCdnDomain: true,
     }
