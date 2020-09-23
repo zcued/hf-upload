@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react'
-import HFUpload from '../lib'
+import ReactDom from 'react-dom'
+import HFUpload from '../src'
 import UploadButton from './upload'
 import CreateOss from './create'
 import List from './list'
 import './style.scss'
 
-export default function Example() {
+function Example() {
   const uploader = useRef(null)
   const [fileList, setFileList] = useState([])
   const [status, setStatus] = useState('waiting')
@@ -63,3 +64,5 @@ export default function Example() {
 
   return <div className="wrap">{child}</div>
 }
+
+ReactDom.render(<Example />, document.getElementById('root'))

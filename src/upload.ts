@@ -1,38 +1,20 @@
 import OSS from 'ali-oss'
 import { MIN_PART_SIZE } from './constants'
-
-interface Props {
-  /** 创建OSS参数 */
-  params: Object
-  /** 上传的文件 */
-  file: HFUploader.File
-  /** 配置项 */
-  options?: HFUploader.Options
-  /** onChange */
-  onChange?: (file: HFUploader.File) => void
-  /** 单个文件 succeed */
-  onSucceed?: (file: HFUploader.File) => void
-  /** 单个文件 failed */
-  onFailed?: (file: HFUploader.File) => void
-  /** 上传后处理 */
-  afterUpload?: Function
-  /** 参数过期 需要更新参数 */
-  needUpdateParams?: Function
-}
+import { UploadFile, UploadOptions, AliProps } from './types'
 
 export default class Upload {
   params: Object
-  options: HFUploader.Options
+  options: UploadOptions
   timeout: number
   partSize: number
   retryCount: number
   retryCountMax: number
-  file: HFUploader.File
+  file: UploadFile
   uploadFileClient: any
   currentCheckpoint: any
-  onChange: (file: HFUploader.File) => void
-  onSucceed: (file: HFUploader.File) => void
-  onFailed: (file: HFUploader.File) => void
+  onChange: (file: UploadFile) => void
+  onSucceed: (file: UploadFile) => void
+  onFailed: (file: UploadFile) => void
   afterUpload: Function
   needUpdateParams: Function
 
@@ -45,7 +27,7 @@ export default class Upload {
     onFailed,
     afterUpload,
     needUpdateParams,
-  }: Props) {
+  }: AliProps) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
     }

@@ -1,0 +1,31 @@
+import PQueue from './p-queue';
+import { UploadFile, UploadOptions, Info, UploadProps } from './types';
+export * from './types';
+export default class HFUploader {
+    map: Object;
+    ids: Array<string>;
+    params: any;
+    queue: PQueue;
+    options: UploadOptions;
+    fileList: Array<UploadFile>;
+    needUpdateParams?: Function;
+    onStart?: Function;
+    afterUpload?: Function;
+    beforeUpload?: Function;
+    onChange: ({ file, fileList }: Info) => void;
+    onSucceed: ({ file, fileList }: Info) => void;
+    onFailed: ({ file, fileList }: Info) => void;
+    onComplete: ({ fileList }: Info) => void;
+    constructor({ files, options, params, onStart, onChange, onSucceed, onFailed, onComplete, afterUpload, beforeUpload, needUpdateParams, }: UploadProps);
+    updateParams: (params: any) => void;
+    add: (files: Array<UploadFile>) => void;
+    abort: (uid: string) => void;
+    delete: (uid: string) => void;
+    clear: () => void;
+    reupload: (uid: string) => void;
+    start: (files: Array<UploadFile>) => void;
+    handleChange: (file: UploadFile) => void;
+    handleSucceed: (file: UploadFile) => void;
+    handleFailed: (file: UploadFile) => void;
+    checkComplete: (uid: string) => void;
+}
