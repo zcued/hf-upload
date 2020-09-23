@@ -53,7 +53,7 @@ declare namespace HFUploader {
 
   interface UploadProps {
     /** 创建实例的参数 */
-    params: Object
+    params: UploadParams
     /** 上传的文件 */
     file: HFUploader.UploadFile
     /** 配置项 */
@@ -70,25 +70,34 @@ declare namespace HFUploader {
     needUpdateParams?: Function
   }
 
+  interface UploadParams {
+    accessKeyId?: string
+    accessKeySecret?: string
+    stsToken?: string
+    bucket?: string
+    region?: string
+    qiniuToken?: string
+  }
+
   interface QiNiuUploadConfig {
     /** 是否开启 cdn 加速 */
     useCdnDomain: boolean
     /** 是否对分片进行 md5校验 */
-    checkByMD5: boolean
+    checkByMD5?: boolean
     /** 强制直传 */
-    forceDirect: boolean
+    forceDirect?: boolean
     /** 上传失败后重试次数 */
-    retryCount: number
+    retryCount?: number
     /** 自定义上传域名 */
-    uphost: string
+    uphost?: string
     /** 自定义分片上传并发请求量 */
-    concurrentRequestLimit: number
+    concurrentRequestLimit?: number
     /** 是否禁止静态日志上报 */
-    disableStatisticsReport: boolean
+    disableStatisticsReport?: boolean
     /** 分片大小，单位为 MB */
-    chunkSize: number
+    chunkSize?: number
     /** 上传域名协议 */
-    upprotocol: 'http:' | 'https:'
+    upprotocol?: 'http:' | 'https:'
   }
 
   interface Subscription {

@@ -1,7 +1,8 @@
 import * as qiniu from 'qiniu-js'
-import { UploadStatus } from './enums'
+import { UploadStatus } from '../enums'
+
 export default class QiniuUpload {
-  params: Object
+  params: HFUploader.UploadParams
   options: HFUploader.Options
   timeout: number
   partSize: number
@@ -29,7 +30,7 @@ export default class QiniuUpload {
       throw new TypeError('A file is required')
     }
 
-    if (!params.token) {
+    if (!params.qiniuToken) {
       throw new TypeError('Missing params to create qiniu')
     }
 
@@ -57,11 +58,7 @@ export default class QiniuUpload {
       checkByMD5: true,
       forceDirect: false,
       retryCount: this.retryCountMax,
-      uphost: '',
-      concurrentRequestLimit: 3,
-      disableStatisticsReport: false,
       chunkSize: this.partSize,
-      upprotocol: 'http:',
     }
 
     let opts = {
@@ -101,7 +98,13 @@ export default class QiniuUpload {
     const { file, key, params, putExtra, config } = options
 
     return new Promise((resolve, reject) => {
-      const observable = qiniu.upload(file, key, params.token, putExtra, config)
+      const observable = qiniu.upload(
+        file,
+        key,
+        params.qiniuToken,
+        putExtra,
+        config
+      )
 
       const next = (res) => {
         this.setProgress(res.total.percent)
@@ -159,8 +162,8 @@ export default class QiniuUpload {
         }
       }
 
-      const subscription = observable.subscribe({ next, error, complete })
-      this.currentSubscription = subscription
+      const subscribe = observable.subscribe({ next, error, complete })
+      this.currentSubscription = subscribe
     })
   }
 
@@ -176,14 +179,11 @@ export default class QiniuUpload {
   }
 
   cancelUpload = () => {
-    if (this.currentSubscription) {
-      this.currentSubscription.unsubscribe()
-    }
+    this.currentSubscription.unsubscribe()
   }
 
   reUpload = () => {
     this.retryCount = 0
-    this.currentSubscription = null
     this.startUpload()
   }
 }

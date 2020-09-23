@@ -22,7 +22,8 @@
   },
   "keywords": [
     "upload",
-    "ali-oss"
+    "ali-oss",
+    "qiniu"
   ],
   "author": "LIX",
   "license": "MIT",

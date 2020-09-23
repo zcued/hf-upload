@@ -15,14 +15,3 @@ export const MIN_PART_SIZE = 100
 
 /** 错误信息提示 */
 export const ERROR_TEXT = '网络故障请重试'
-
-/** 允许的视频格式 */
-export const UPLOAD_VIDEO_ACCEPTS = [
-  'AVI',
-  'MOV',
-  'RMVB',
-  'RM',
-  'FLV',
-  'MP4',
-  '3GP',
-]

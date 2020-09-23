@@ -1,7 +1,6 @@
 import React, { useState, useRef, memo } from 'react'
 import HFUpload from '../../src/index'
 import List from '../List'
-import { UPLOAD_VIDEO_ACCEPTS } from '../../src/constants'
 import { getFileExt } from '../../src/util'
 import '../style.scss'
 
@@ -10,6 +9,9 @@ function QiniuExample() {
   const uploader = useRef(null)
   const [fileList, setFileList] = useState([])
   const [token, setToken] = useState('')
+
+  /** 允许的视频格式 */
+  const UPLOAD_VIDEO_ACCEPTS = ['AVI', 'MOV', 'RMVB', 'RM', 'FLV', 'MP4', '3GP']
 
   const createUploader = (params) => {
     uploader.current = new HFUpload({
@@ -36,11 +38,6 @@ function QiniuExample() {
           if (!UPLOAD_VIDEO_ACCEPTS.includes(ext.toLocaleUpperCase())) {
             return reject('文件类型不支持')
           }
-
-          const isOutRange = file.file_size / 1024 / 1024 > 1
-          if (isOutRange) {
-            return reject('上传文件过大')
-          }
           file.type = 'video'
           resolve()
         })
@@ -56,7 +53,7 @@ function QiniuExample() {
   }
 
   const handleChange = (e) => {
-    const param = { token: e.target.value }
+    const param = { qiniuToken: e.target.value }
     createUploader(param)
     setToken(e.target.value)
   }

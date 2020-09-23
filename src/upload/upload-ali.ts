@@ -1,9 +1,9 @@
 import OSS from 'ali-oss'
-import { MIN_PART_SIZE } from './constants'
-import { UploadStatus } from './enums'
+import { MIN_PART_SIZE } from '../constants'
+import { UploadStatus } from '../enums'
 
 export default class AliUpload {
-  params: Object
+  params: HFUploader.UploadParams
   options: HFUploader.Options
   timeout: number
   partSize: number
