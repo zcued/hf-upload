@@ -12,8 +12,8 @@ import {
   UploadFile,
   UploadOptions,
   UploadProps,
-  MultiAction,
-  PromiseAction,
+  MultiFileFn,
+  PromiseFn,
   Noop,
 } from './types'
 
@@ -26,14 +26,14 @@ export default class HFUploader {
   queue: PQueue
   options: UploadOptions
   fileList: Array<UploadFile> = []
-  needUpdateParams?: PromiseAction
+  needUpdateParams?: PromiseFn
   onStart?: Noop
-  afterUpload?: PromiseAction
-  beforeUpload?: PromiseAction
-  onChange: MultiAction
-  onSucceed: MultiAction
-  onFailed: MultiAction
-  onComplete: MultiAction
+  afterUpload?: PromiseFn
+  beforeUpload?: PromiseFn
+  onChange: MultiFileFn
+  onSucceed: MultiFileFn
+  onFailed: MultiFileFn
+  onComplete: MultiFileFn
 
   constructor({
     files,

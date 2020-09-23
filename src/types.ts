@@ -60,19 +60,19 @@ export interface UploadProps {
   /** 上传开始 */
   onStart?: Noop
   /** beforeUpload */
-  beforeUpload?: PromiseAction
+  beforeUpload?: PromiseFn
   /** afterUpload */
-  afterUpload?: PromiseAction
+  afterUpload?: PromiseFn
   /** needUpdateParams */
-  needUpdateParams?: PromiseAction
+  needUpdateParams?: PromiseFn
   /** file change */
-  onChange?: MultiAction
+  onChange?: MultiFileFn
   /** file Succeed */
-  onSucceed?: MultiAction
+  onSucceed?: MultiFileFn
   /** file Failed */
-  onFailed?: MultiAction
+  onFailed?: MultiFileFn
   /** complete */
-  onComplete?: MultiAction
+  onComplete?: MultiFileFn
 }
 
 export interface AliProps {
@@ -83,21 +83,21 @@ export interface AliProps {
   /** 配置项 */
   options?: UploadOptions
   /** onChange */
-  onChange?: SingleAction
+  onChange?: SingleFileFn
   /** 单个文件 succeed */
-  onSucceed?: SingleAction
+  onSucceed?: SingleFileFn
   /** 单个文件 failed */
-  onFailed?: SingleAction
+  onFailed?: SingleFileFn
   /** 上传后处理 */
-  afterUpload?: PromiseAction
+  afterUpload?: PromiseFn
   /** 参数过期 需要更新参数 */
-  needUpdateParams?: PromiseAction
+  needUpdateParams?: PromiseFn
 }
 
 export type Noop = () => void
 
-export type PromiseAction = (file: UploadFile) => Promise<any>
+export type PromiseFn = (file: UploadFile) => Promise<any>
 
-export type SingleAction = (file: UploadFile) => void
+export type SingleFileFn = (file: UploadFile) => void
 
-export type MultiAction = ({ file, fileList }: Info) => void
+export type MultiFileFn = ({ file, fileList }: Info) => void
