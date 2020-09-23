@@ -1,6 +1,12 @@
 import OSS from 'ali-oss'
 import { MIN_PART_SIZE } from './constants'
-import { UploadFile, UploadOptions, AliProps } from './types'
+import {
+  UploadFile,
+  UploadOptions,
+  AliProps,
+  SingleAction,
+  PromiseAction,
+} from './types'
 
 export default class Upload {
   params: Object
@@ -12,11 +18,11 @@ export default class Upload {
   file: UploadFile
   uploadFileClient: any
   currentCheckpoint: any
-  onChange: (file: UploadFile) => void
-  onSucceed: (file: UploadFile) => void
-  onFailed: (file: UploadFile) => void
-  afterUpload: Function
-  needUpdateParams: Function
+  onChange: SingleAction
+  onSucceed: SingleAction
+  onFailed: SingleAction
+  afterUpload: PromiseAction
+  needUpdateParams: PromiseAction
 
   constructor({
     file,

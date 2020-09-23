@@ -8,7 +8,14 @@ import {
   fileToObject,
 } from './util'
 import defaultOptions from './default'
-import { UploadFile, UploadOptions, Info, UploadProps } from './types'
+import {
+  UploadFile,
+  UploadOptions,
+  UploadProps,
+  MultiAction,
+  PromiseAction,
+  Noop,
+} from './types'
 
 export * from './types'
 
@@ -19,14 +26,14 @@ export default class HFUploader {
   queue: PQueue
   options: UploadOptions
   fileList: Array<UploadFile> = []
-  needUpdateParams?: Function
-  onStart?: Function
-  afterUpload?: Function
-  beforeUpload?: Function
-  onChange: ({ file, fileList }: Info) => void
-  onSucceed: ({ file, fileList }: Info) => void
-  onFailed: ({ file, fileList }: Info) => void
-  onComplete: ({ fileList }: Info) => void
+  needUpdateParams?: PromiseAction
+  onStart?: Noop
+  afterUpload?: PromiseAction
+  beforeUpload?: PromiseAction
+  onChange: MultiAction
+  onSucceed: MultiAction
+  onFailed: MultiAction
+  onComplete: MultiAction
 
   constructor({
     files,

@@ -58,21 +58,21 @@ export interface UploadProps {
   /** 创建OSS参数 */
   params?: any
   /** 上传开始 */
-  onStart?: Function
+  onStart?: Noop
   /** beforeUpload */
-  beforeUpload?: Function
+  beforeUpload?: PromiseAction
   /** afterUpload */
-  afterUpload?: Function
+  afterUpload?: PromiseAction
   /** needUpdateParams */
-  needUpdateParams?: Function
+  needUpdateParams?: PromiseAction
   /** file change */
-  onChange?: ({ file, fileList }: Info) => void
+  onChange?: MultiAction
   /** file Succeed */
-  onSucceed?: ({ file, fileList }: Info) => void
+  onSucceed?: MultiAction
   /** file Failed */
-  onFailed?: ({ file, fileList }: Info) => void
+  onFailed?: MultiAction
   /** complete */
-  onComplete?: ({ fileList }: Info) => void
+  onComplete?: MultiAction
 }
 
 export interface AliProps {
@@ -83,13 +83,21 @@ export interface AliProps {
   /** 配置项 */
   options?: UploadOptions
   /** onChange */
-  onChange?: (file: UploadFile) => void
+  onChange?: SingleAction
   /** 单个文件 succeed */
-  onSucceed?: (file: UploadFile) => void
+  onSucceed?: SingleAction
   /** 单个文件 failed */
-  onFailed?: (file: UploadFile) => void
+  onFailed?: SingleAction
   /** 上传后处理 */
-  afterUpload?: Function
+  afterUpload?: PromiseAction
   /** 参数过期 需要更新参数 */
-  needUpdateParams?: Function
+  needUpdateParams?: PromiseAction
 }
+
+export type Noop = () => void
+
+export type PromiseAction = (file: UploadFile) => Promise<any>
+
+export type SingleAction = (file: UploadFile) => void
+
+export type MultiAction = ({ file, fileList }: Info) => void
