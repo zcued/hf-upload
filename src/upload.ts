@@ -4,8 +4,8 @@ import {
   UploadFile,
   UploadOptions,
   AliProps,
-  SingleAction,
-  PromiseAction,
+  SingleFileFn,
+  PromiseFn,
 } from './types'
 
 export default class Upload {
@@ -18,11 +18,11 @@ export default class Upload {
   file: UploadFile
   uploadFileClient: any
   currentCheckpoint: any
-  onChange: SingleAction
-  onSucceed: SingleAction
-  onFailed: SingleAction
-  afterUpload: PromiseAction
-  needUpdateParams: PromiseAction
+  onChange: SingleFileFn
+  onSucceed: SingleFileFn
+  onFailed: SingleFileFn
+  afterUpload: PromiseFn
+  needUpdateParams: PromiseFn
 
   constructor({
     file,
