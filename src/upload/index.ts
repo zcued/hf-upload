@@ -2,15 +2,24 @@ import OssUpload from './upload-ali'
 import QiniuUpload from './upload-qiniu'
 
 // 获取上传实例
-function Upload(params) {
-  const { file, options } = params
+function Upload(parameter) {
+  const { file, options, params } = parameter
   const { rule } = options
+  const {
+    accessKeyId,
+    accessKeySecret,
+    stsToken,
+    bucket,
+    region,
+    qiniuToken,
+  } = params
 
   if (rule && rule[file.type] === 'qiniu') {
-    return new QiniuUpload({ ...params })
+    parameter.params = { qiniuToken }
+    return new QiniuUpload({ ...parameter })
   }
-
-  return new OssUpload({ ...params })
+  parameter.params = { accessKeyId, accessKeySecret, stsToken, bucket, region }
+  return new OssUpload({ ...parameter })
 }
 
 export default Upload

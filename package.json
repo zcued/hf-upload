@@ -4,7 +4,6 @@
   "description": "An upload tool",
   "main": "./lib/index.js",
   "types": "./declaration/index.d.ts",
-  "homepage": "https://zcued.github.io/hf-upload/example/",
   "bugs": {
     "url": "https://github.com/zcued/hf-upload/issues"
   },

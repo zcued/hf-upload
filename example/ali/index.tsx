@@ -5,7 +5,7 @@ import CreateOss from './create'
 import List from '../list'
 import '../style.scss'
 
-function Example() {
+function AliExample() {
   const uploader = useRef(null)
   const [fileList, setFileList] = useState([])
   const [status, setStatus] = useState('waiting')
@@ -64,4 +64,4 @@ function Example() {
   return <div className="wrap">{child}</div>
 }
 
-export default memo(Example)
+export default memo(AliExample)
