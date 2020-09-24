@@ -1,12 +1,14 @@
 module.exports = {
   mode: 'development',
   devtool: 'cheap-module-eval-source-map',
-  entry: './example/index.tsx',
+  entry: './index.tsx',
   output: {
     filename: 'bundle.js'
   },
   devServer: {
-    port: 8901
+    port: 8901,
+    inline: true,
+    historyApiFallback: true
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']

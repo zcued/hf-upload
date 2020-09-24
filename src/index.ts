@@ -8,6 +8,7 @@ import {
   fileToObject,
 } from './util'
 import defaultOptions from './default'
+import { UploadStatus } from './enums'
 import {
   UploadFile,
   UploadOptions,
@@ -129,7 +130,7 @@ export default class HFUploader {
     const addFile = (file) => {
       this.queue.add(
         () => {
-          const upload = new Upload({
+          const parameter = {
             file,
             params: this.params,
             options: this.options,
@@ -138,7 +139,8 @@ export default class HFUploader {
             onFailed: this.handleFailed,
             afterUpload: this.afterUpload,
             needUpdateParams: this.needUpdateParams,
-          })
+          }
+          const upload = Upload(parameter)
           this.map[file.uid] = upload
           return upload.startUpload()
         },
@@ -160,7 +162,7 @@ export default class HFUploader {
 
     files.forEach((f) => {
       const objFile = fileToObject(f)
-      objFile.status = 'waiting'
+      objFile.status = UploadStatus.Waiting
       this.handleChange(objFile)
       // 计算 width height aspect transform thumbUrl
       preproccessFile(objFile).then(() => {
@@ -171,7 +173,7 @@ export default class HFUploader {
               md5File(objFile)
             })
             .catch((e) => {
-              objFile.status = 'error'
+              objFile.status = UploadStatus.Error
               objFile.errorMessage = typeof e === 'string' ? e : 'error'
               this.handleFailed(objFile)
             })

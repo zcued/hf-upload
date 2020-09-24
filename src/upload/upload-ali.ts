@@ -1,14 +1,15 @@
 import OSS from 'ali-oss'
-import { MIN_PART_SIZE } from './constants'
+import { MIN_PART_SIZE } from '../constants'
+import { UploadStatus } from '../enums'
 import {
   UploadFile,
   UploadOptions,
   AliProps,
   SingleFileFn,
   PromiseFn,
-} from './types'
+} from '../types'
 
-export default class Upload {
+export default class AliUpload {
   params: Object
   options: UploadOptions
   timeout: number
@@ -69,14 +70,14 @@ export default class Upload {
       this.file = {
         ...this.file,
         percent: p * 99,
-        status: 'uploading',
+        status: UploadStatus.Uploading,
         errorMessage: '',
       }
       this.onChange(this.file)
     }
 
     const finish = (f) => {
-      this.file.status = 'uploaded'
+      this.file.status = UploadStatus.Uploaded
       this.file.percent = 100
       this.onSucceed(f)
     }
@@ -102,6 +103,7 @@ export default class Upload {
         .multipartUpload(key, this.file.originFile, opts)
         .then((res) => {
           this.file.response = res
+          this.file.oss_path = res.name
           this.currentCheckpoint = null
           const after = this.afterUpload && this.afterUpload(this.file)
 
@@ -112,7 +114,7 @@ export default class Upload {
                 resolve()
               })
               .catch((err) => {
-                this.file.status = 'error'
+                this.file.status = UploadStatus.Error
                 this.file.errorMessage =
                   typeof err === 'string' ? err : this.options.errorText
                 this.onFailed(this.file)
@@ -148,7 +150,7 @@ export default class Upload {
                 this.startUpload()
               }
             } else {
-              this.file.status = 'error'
+              this.file.status = UploadStatus.Error
               this.file.errorMessage = 'params is expired'
               this.onFailed(this.file)
               reject(err)
@@ -167,7 +169,7 @@ export default class Upload {
               this.retryCount++
               this.uploadFile('')
             } else {
-              this.file.status = 'error'
+              this.file.status = UploadStatus.Error
               this.file.errorMessage = 'time out'
               this.onFailed(this.file)
               reject(err)
@@ -175,7 +177,7 @@ export default class Upload {
             return
           }
 
-          this.file.status = 'error'
+          this.file.status = UploadStatus.Error
           this.file.errorMessage = this.options.errorText
           this.onFailed(this.file)
           reject(err)

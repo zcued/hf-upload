@@ -1,10 +1,9 @@
-import React, { useRef, useState } from 'react'
-import ReactDom from 'react-dom'
-import HFUpload from '../src'
-import UploadButton from './upload'
+import React, { useState, useRef, memo } from 'react'
+import HFUpload from '../../src/index'
+import UploadButton from '../upload'
 import CreateOss from './create'
-import List from './list'
-import './style.scss'
+import List from '../list'
+import '../style.scss'
 
 function Example() {
   const uploader = useRef(null)
@@ -65,4 +64,4 @@ function Example() {
   return <div className="wrap">{child}</div>
 }
 
-ReactDom.render(<Example />, document.getElementById('root'))
+export default memo(Example)
