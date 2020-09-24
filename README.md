@@ -8,8 +8,6 @@
 
 `npm install hf-uploader --save` or `yarn add hf-uploader`
 
-A [UMD version of hf-upload](https://github.com/zcued/hf-upload/tree/master) as well
-
 ### Example
 
 ```sh
