@@ -15,3 +15,6 @@ export const MIN_PART_SIZE = 100
 
 /** 错误信息提示 */
 export const ERROR_TEXT = '网络故障请重试'
+
+/** qiniu分片上传时，分片大小为5 单位MB */
+export const CHUNK_SIZE = 5

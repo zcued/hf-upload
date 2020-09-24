@@ -1,6 +1,6 @@
 import * as qiniu from 'qiniu-js'
 import { UploadStatus } from '../enums'
-import { CONCURRENCY } from '../constants'
+import { CONCURRENCY, CHUNK_SIZE } from '../constants'
 import {
   UploadParams,
   UploadOptions,
@@ -67,6 +67,7 @@ export default class QiniuUpload {
     const config: QiNiuUploadConfig = {
       // 是否使用cdn 加速
       useCdnDomain: true,
+      chunkSize: CHUNK_SIZE,
     }
 
     let opts = {
