@@ -10,7 +10,7 @@ export interface UploadOptions {
   /** 错误提示 */
   errorText?: string
   /** 文件上传的方式 (ali|qiliu) */
-  uploadConfig?: { [key: string]: string }
+  rule?: { [key: string]: string }
 }
 
 export interface UploadFile {

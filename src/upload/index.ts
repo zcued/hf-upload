@@ -4,9 +4,9 @@ import QiniuUpload from './upload-qiniu'
 // 获取上传实例
 function Upload(params) {
   const { file, options } = params
-  const { uploadConfig } = options
+  const { rule } = options
 
-  if (uploadConfig && uploadConfig[file.type] === 'qiniu') {
+  if (rule && rule[file.type] === 'qiniu') {
     return new QiniuUpload({ ...params })
   }
 
