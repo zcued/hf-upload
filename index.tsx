@@ -1,16 +1,17 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
-import Example from './example/ali'
+import AliExample from './example/ali'
 import QiniuExample from './example/qiniu'
+import Example from './example'
 function App() {
   return (
     <div>
       <BrowserRouter>
         <Switch>
-          <Route path="/oss" component={Example} />
+          <Route path="/ali" component={AliExample} />
           <Route path="/qiniu" component={QiniuExample} />
-          <Redirect to="/oss" />
+          <Route path="/" component={Example} />
         </Switch>
       </BrowserRouter>
     </div>

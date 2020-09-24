@@ -8,14 +8,7 @@
 
 `npm install hf-uploader --save` or `yarn add hf-uploader`
 
-A [UMD version of hf-upload](https://github.com/zcued/hf-upload/tree/master/dist) as well
-
-### Run Project
-
-`npm run start ` or `yarn start`
-
-- ali-oss Upload example url: http://localhost:8901/oss
-- qiniu upload example url: http://localhost:8901/qiniu
+A [UMD version of hf-upload](https://github.com/zcued/hf-upload/tree/master) as well
 
 ### Example
 
@@ -95,19 +88,18 @@ ReactDOM.render(<Example />, container)
 | onChange         | function |                            | Upload status and percent change          | N                                               |
 | onSucceed        | function |                            | Single file upload succeeded              | N                                               |
 | onFailed         | function |                            | Single file upload failed                 | N                                               |
-| afterUpload      | function |                            | Call after upload is complete             | N                                               |
 | needUpdateParams | function |                            | Called when parameters need to be updated | N                                               |
 
 #### <span id = "default">DefaultOptions</span>
 
-| Property      | Type   | Default        | Description                 |
-| ------------- | ------ | -------------- | --------------------------- |
-| concurrency   | number | 2              | Maximum concurrency         |
-| partSize      | number | 500            | Part size (kb)              |
-| timeout       | number | 60\*1000       | Overtime time (ms)          |
-| retryCountMax | number | 3              | Retry times out             |
-| errorText     | string | 网络故障请重试 | Error message               |
-| rule          | Object | {}             | Select the method of upload |
+| Property      | Type   | Default        | Description                                                                                           |
+| ------------- | ------ | -------------- | ----------------------------------------------------------------------------------------------------- |
+| concurrency   | number | 2              | Maximum concurrency                                                                                   |
+| partSize      | number | 500            | Part size (kb)                                                                                        |
+| timeout       | number | 60\*1000       | Overtime time (ms)                                                                                    |
+| retryCountMax | number | 3              | Retry times out                                                                                       |
+| errorText     | string | 网络故障请重试 | Error message                                                                                         |
+| rule          | Object | {}             | Select upload target by file type. If not specified, upload to Ali by default. eg: {'video': 'qiniu'} |
 
 ### <span id = "method">Method</span>
 
