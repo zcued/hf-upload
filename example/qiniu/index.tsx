@@ -14,6 +14,7 @@ function QiniuExample() {
   const UPLOAD_VIDEO_ACCEPTS = ['AVI', 'MOV', 'RMVB', 'RM', 'FLV', 'MP4', '3GP']
   const options = {
     rule: { video: 'qiniu' },
+    uploadUrl: 'tmp/dev',
   }
   const createUploader = (params) => {
     uploader.current = new HFUpload({

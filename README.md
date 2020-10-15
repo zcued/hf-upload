@@ -98,6 +98,7 @@ ReactDOM.render(<Example />, container)
 | retryCountMax | number | 3              | Retry times out                                                                                       |
 | errorText     | string | 网络故障请重试 | Error message                                                                                         |
 | rule          | Object | {}             | Select upload target by file type. If not specified, upload to Ali by default. eg: {'video': 'qiniu'} |
+| uploadUrl     | string | tmp            | Upload to the specified directory. eg:{ uploadUrl: 'tmp/dev' }                                        |
 
 ### <span id = "method">Method</span>
 
@@ -142,3 +143,44 @@ const uploader = new HfUpload({})
 Ali-oss SDK document：https://help.aliyun.com/document_detail/64041.html?spm=a2c4g.11186623.6.1208.373e5966mqf1Mw
 
 qiniu JavaScript SDK document :https://developer.qiniu.com/kodo/sdk/1283/javascript
+
+interface UploadFile {
+/** uid \*/
+uid: string
+/** 文件名 _/
+name: string
+/\*\* 文件类型 _/
+mime*type: string
+/** 素材类型 \*/
+type: string
+/** 文件大小 */
+file*size: number
+/\*\* 是否超限 */
+outSize: boolean
+/** 原始文件 \*/
+originFile?: File
+/** 上传进度 0 ～ 1 _/
+percent?: number
+/\*\* 文件上传状态 _/
+status?: string
+/** response \*/
+response?: any
+/** 上传失败原因 _/
+errorMessage?: string
+/\*\* 封面图 _/
+thumbUrl?: string
+/** 宽 \*/
+width?: number
+/** 高 _/
+height?: number
+/\*\* 宽高比 _/
+aspect?: number
+/** 旋转角度 \*/
+transform?: string
+/** md5 值 _/
+md5_file?: string
+/\*\* 后缀 _/
+extension?: string
+/\*_ 暂停状态 _/
+isBreak?: boolean
+}

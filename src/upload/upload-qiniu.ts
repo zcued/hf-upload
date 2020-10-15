@@ -58,7 +58,8 @@ export default class QiniuUpload {
   }
 
   uploadFile = () => {
-    const key = `tmp/${this.file.uid}.${this.file.extension}`
+    const { uploadUrl = 'tmp' } = this.options
+    const key = `${uploadUrl}/${this.file.uid}.${this.file.extension}`
     const putExtra = {
       fname: this.file.originFile.name,
       // 分片上传的并发请求量
@@ -151,7 +152,7 @@ export default class QiniuUpload {
       const complete = (res) => {
         this.file.response = res
         this.file.oss_path = res.key
-
+        console.log(666, res.key)
         const after = this.afterUpload && this.afterUpload(this.file)
         if (after && after.then) {
           after

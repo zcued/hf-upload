@@ -11,6 +11,8 @@ export interface UploadOptions {
   errorText?: string
   /** 文件上传的方式 (ali|qiliu) */
   rule?: { [key: string]: string }
+  /** 文件上传临时目录的url */
+  uploadUrl?: string
 }
 
 export interface UploadFile {
