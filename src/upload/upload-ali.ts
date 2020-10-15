@@ -83,8 +83,8 @@ export default class AliUpload {
     }
 
     const fileName = encodeURI(this.file.name)
-    const { uploadUrl = 'tmp' } = this.options
-    const key = `${uploadUrl}/${this.file.uid}.${this.file.extension}`
+    const { uploadPath = 'tmp' } = this.options
+    const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
 
     let opts: any = {
       progress,

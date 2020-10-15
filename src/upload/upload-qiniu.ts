@@ -58,8 +58,8 @@ export default class QiniuUpload {
   }
 
   uploadFile = () => {
-    const { uploadUrl = 'tmp' } = this.options
-    const key = `${uploadUrl}/${this.file.uid}.${this.file.extension}`
+    const { uploadPath = 'tmp' } = this.options
+    const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
     const putExtra = {
       fname: this.file.originFile.name,
       // 分片上传的并发请求量
