@@ -152,7 +152,7 @@ export default class QiniuUpload {
       const complete = (res) => {
         this.file.response = res
         this.file.oss_path = res.key
-        console.log(666, res.key)
+
         const after = this.afterUpload && this.afterUpload(this.file)
         if (after && after.then) {
           after
