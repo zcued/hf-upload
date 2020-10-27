@@ -9,8 +9,9 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 .vscode
-yarn.lock
 .next
 server/*.js
 *.map
 coverage
+lib
+declaration

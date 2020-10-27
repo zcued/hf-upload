@@ -1,40 +1,29 @@
 import OSS from 'ali-oss'
-import { MIN_PART_SIZE } from './constants'
+import { MIN_PART_SIZE } from '../constants'
+import { UploadStatus } from '../enums'
+import {
+  UploadFile,
+  UploadOptions,
+  AliProps,
+  SingleFileFn,
+  PromiseFn,
+} from '../types'
 
-interface Props {
-  /** 创建OSS参数 */
+export default class AliUpload {
   params: Object
-  /** 上传的文件 */
-  file: HFUploader.File
-  /** 配置项 */
-  options?: HFUploader.Options
-  /** onChange */
-  onChange?: (file: HFUploader.File) => void
-  /** 单个文件 succeed */
-  onSucceed?: (file: HFUploader.File) => void
-  /** 单个文件 failed */
-  onFailed?: (file: HFUploader.File) => void
-  /** 上传后处理 */
-  afterUpload?: Function
-  /** 参数过期 需要更新参数 */
-  needUpdateParams?: Function
-}
-
-export default class Upload {
-  params: Object
-  options: HFUploader.Options
+  options: UploadOptions
   timeout: number
   partSize: number
   retryCount: number
   retryCountMax: number
-  file: HFUploader.File
+  file: UploadFile
   uploadFileClient: any
   currentCheckpoint: any
-  onChange: (file: HFUploader.File) => void
-  onSucceed: (file: HFUploader.File) => void
-  onFailed: (file: HFUploader.File) => void
-  afterUpload: Function
-  needUpdateParams: Function
+  onChange: SingleFileFn
+  onSucceed: SingleFileFn
+  onFailed: SingleFileFn
+  afterUpload: PromiseFn
+  needUpdateParams: PromiseFn
 
   constructor({
     file,
@@ -45,7 +34,7 @@ export default class Upload {
     onFailed,
     afterUpload,
     needUpdateParams,
-  }: Props) {
+  }: AliProps) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
     }
@@ -81,20 +70,21 @@ export default class Upload {
       this.file = {
         ...this.file,
         percent: p * 99,
-        status: 'uploading',
+        status: UploadStatus.Uploading,
         errorMessage: '',
       }
       this.onChange(this.file)
     }
 
     const finish = (f) => {
-      this.file.status = 'uploaded'
+      this.file.status = UploadStatus.Uploaded
       this.file.percent = 100
       this.onSucceed(f)
     }
 
     const fileName = encodeURI(this.file.name)
-    const key = `tmp/${this.file.uid}.${this.file.extension}`
+    const { uploadPath = 'tmp' } = this.options
+    const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
 
     let opts: any = {
       progress,
@@ -114,6 +104,7 @@ export default class Upload {
         .multipartUpload(key, this.file.originFile, opts)
         .then((res) => {
           this.file.response = res
+          this.file.oss_path = res.name
           this.currentCheckpoint = null
           const after = this.afterUpload && this.afterUpload(this.file)
 
@@ -124,7 +115,7 @@ export default class Upload {
                 resolve()
               })
               .catch((err) => {
-                this.file.status = 'error'
+                this.file.status = UploadStatus.Error
                 this.file.errorMessage =
                   typeof err === 'string' ? err : this.options.errorText
                 this.onFailed(this.file)
@@ -160,7 +151,7 @@ export default class Upload {
                 this.startUpload()
               }
             } else {
-              this.file.status = 'error'
+              this.file.status = UploadStatus.Error
               this.file.errorMessage = 'params is expired'
               this.onFailed(this.file)
               reject(err)
@@ -179,7 +170,7 @@ export default class Upload {
               this.retryCount++
               this.uploadFile('')
             } else {
-              this.file.status = 'error'
+              this.file.status = UploadStatus.Error
               this.file.errorMessage = 'time out'
               this.onFailed(this.file)
               reject(err)
@@ -187,7 +178,7 @@ export default class Upload {
             return
           }
 
-          this.file.status = 'error'
+          this.file.status = UploadStatus.Error
           this.file.errorMessage = this.options.errorText
           this.onFailed(this.file)
           reject(err)

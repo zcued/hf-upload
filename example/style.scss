@@ -112,3 +112,17 @@ input[type='text'] {
     transition: width 0.2s ease-in;
   }
 }
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  div {
+    width: 200px;
+    margin-right: 20px;
+    a {
+      color: #fff;
+    }
+  }
+}

@@ -1,9 +1,9 @@
 {
   "name": "hf-upload",
-  "version": "1.1.6",
+  "version": "2.0.0",
   "description": "An upload tool",
   "main": "./lib/index.js",
-  "homepage": "https://zcued.github.io/hf-upload/example/",
+  "types": "./declaration/index.d.ts",
   "bugs": {
     "url": "https://github.com/zcued/hf-upload/issues"
   },
@@ -12,30 +12,19 @@
     "url": "https://github.com/zcued/hf-upload"
   },
   "scripts": {
-    "start": "NODE_ENV=dev webpack-dev-server --progress --config build --hot",
-    "build": "npm run build:umd && npm run build:cjs",
-    "build:umd": "npm run clean:umd && NODE_ENV=umd webpack --progress --config build && NODE_ENV=umd webpack --progress --config build --minify",
-    "build:cjs": "npm run clean:cjs && babel src --out-dir lib --extensions '.ts,.js'",
-    "build:docs": "NODE_ENV=docs webpack --progress --config build",
-    "clean:umd": "rimraf dist",
-    "clean:cjs": "rimraf lib"
+    "start": "webpack-dev-server --progress --hot",
+    "build": "rimraf lib && tsc",
+    "prepublish": "yarn build"
   },
   "keywords": [
     "upload",
-    "ali-oss"
+    "ali-oss",
+    "qiniu"
   ],
   "author": "LIX",
   "license": "MIT",
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
-    "@babel/core": "^7.7.2",
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/plugin-transform-runtime": "^7.7.4",
-    "@babel/preset-env": "^7.7.1",
-    "@babel/preset-react": "^7.7.4",
-    "@babel/preset-typescript": "^7.7.4",
-    "babel-eslint": "^10.0.3",
-    "core-js": "2",
+    "@babel/runtime-corejs2": "^7.11.2",
     "css-loader": "^3.5.3",
     "eslint": "^6.6.0",
     "eslint-config-zcool": "^1.5.0",
@@ -48,11 +37,12 @@
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0",
-    "webpack-merge": "^4.2.2",
-    "worker-loader": "^2.0.0"
+    "worker-loader": "^2.0.0",
+    "react-router-dom": "^5.2.0"
   },
   "dependencies": {
     "ali-oss": "^6.2.1",
+    "qiniu-js": "^3.1.1",
     "spark-md5": "^3.0.0",
     "typescript": "^3.7.2"
   }
