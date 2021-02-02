@@ -4,6 +4,7 @@ import {
   TIMEOUT,
   ERROR_TEXT,
   RETRY_COUNT_MAX,
+  IS_ORDER,
 } from './constants'
 import { UploadOptions } from './types'
 
@@ -13,6 +14,7 @@ const defaultOptions: UploadOptions = {
   timeout: TIMEOUT,
   errorText: ERROR_TEXT,
   retryCountMax: RETRY_COUNT_MAX,
+  isOrder: IS_ORDER,
 }
 
 export default defaultOptions
