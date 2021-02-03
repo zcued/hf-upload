@@ -153,32 +153,31 @@ export default class HFUploader {
       )
     }
 
-    // 计算md5
-    const md5File = async (f) => {
+    const createWorker = async (f, onmessage) => {
       const Worker: any = await import('./file.worker.js')
       const myWorker = new Worker.default()
-      // 按照 md5的计算先后 上传
       myWorker.postMessage({ file: f.originFile })
-      myWorker.onmessage = (e) => {
-        f.md5_file = e.data
-        addFile(f)
-        myWorker.terminate()
-      }
+      myWorker.onmessage = onmessage
     }
 
-    const md5FileOrder = async (f, index) => {
-      const Worker: any = await import('./file.worker.js')
-      const myWorker = new Worker.default()
-      // 按照 文件列表上传顺序 开始上传
-      this.temporary = Array.from({ length: files.length })
-      myWorker.postMessage({ file: f.originFile })
-      myWorker.onmessage = (e) => {
+    this.temporary = Array.from({ length: files.length })
+
+    // 计算md5
+    // 按照 md5的计算先后 上传
+    const md5File = (f) =>
+      createWorker(f, function (e) {
+        f.md5_file = e.data
+        addFile(f)
+        this.terminate()
+      })
+
+    // 按照 文件列表上传顺序 开始上传
+    const md5FileOrder = (f, index) =>
+      createWorker(f, function (e) {
         f.md5_file = e.data
         this.temporary[index] = { f, isrun: false }
-        console.log(this.temporary)
         if (this.temporary.slice(0, index).every((item) => item)) {
           let lastIndex = files.length
-
           const afterHavData = this.temporary.slice(index, files.length)
 
           for (let tem in afterHavData) {
@@ -195,9 +194,8 @@ export default class HFUploader {
             }
           })
         }
-        myWorker.terminate()
-      }
-    }
+        this.terminate()
+      })
 
     files.forEach((f, index) => {
       const objFile = fileToObject(f)
