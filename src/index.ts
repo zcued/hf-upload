@@ -157,7 +157,7 @@ export default class HFUploader {
       const Worker: any = await import('./file.worker.js')
       const myWorker = new Worker.default()
       myWorker.postMessage({ file: f.originFile })
-      myWorker.onmessage = onmessage
+      myWorker.onmessage = (e) => onmessage(e, myWorker)
     }
 
     this.temporary = Array.from({ length: files.length })
@@ -173,7 +173,7 @@ export default class HFUploader {
 
     // 按照 文件列表上传顺序 开始上传
     const md5FileOrder = (f, index) =>
-      createWorker(f, function (e) {
+      createWorker(f, (e, worker) => {
         f.md5_file = e.data
         this.temporary[index] = { f, isrun: false }
         if (this.temporary.slice(0, index).every((item) => item)) {
@@ -194,7 +194,7 @@ export default class HFUploader {
             }
           })
         }
-        this.terminate()
+        worker.terminate()
       })
 
     files.forEach((f, index) => {
