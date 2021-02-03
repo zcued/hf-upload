@@ -170,15 +170,15 @@ export default class HFUploader {
         addFile(f)
         this.terminate()
       })
-
+    const that = this
     // 按照 文件列表上传顺序 开始上传
     const md5FileOrder = (f, index) =>
       createWorker(f, function (e) {
         f.md5_file = e.data
-        this.temporary[index] = { f, isrun: false }
-        if (this.temporary.slice(0, index).every((item) => item)) {
+        that.temporary[index] = { f, isrun: false }
+        if (that.temporary.slice(0, index).every((item) => item)) {
           let lastIndex = files.length
-          const afterHavData = this.temporary.slice(index, files.length)
+          const afterHavData = that.temporary.slice(index, files.length)
 
           for (let tem in afterHavData) {
             const item = afterHavData[tem]
@@ -188,7 +188,7 @@ export default class HFUploader {
             }
           }
 
-          this.temporary.slice(0, lastIndex).forEach((item, ind) => {
+          that.temporary.slice(0, lastIndex).forEach((item, ind) => {
             if (!item.isrun) {
               addFile(item.f, ind)
             }
