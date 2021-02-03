@@ -13,6 +13,8 @@ export interface UploadOptions {
   rule?: { [key: string]: string }
   /** 文件上传的临时路径 */
   uploadPath?: string
+  /** 是否按照文件顺序进行上传 */
+  isOrder?: boolean
 }
 
 export interface UploadFile {

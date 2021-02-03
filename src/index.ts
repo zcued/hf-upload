@@ -35,6 +35,7 @@ export default class HFUploader {
   onSucceed: MultiFileFn
   onFailed: MultiFileFn
   onComplete: MultiFileFn
+  temporary: Array<any>
 
   constructor({
     files,
@@ -65,6 +66,7 @@ export default class HFUploader {
     this.afterUpload = afterUpload
     this.beforeUpload = beforeUpload
     this.needUpdateParams = needUpdateParams
+    this.temporary = []
   }
 
   // 更新参数
@@ -127,7 +129,10 @@ export default class HFUploader {
 
   // 开始上传
   start = (files: Array<UploadFile>) => {
-    const addFile = (file) => {
+    const addFile = (file, index?: number) => {
+      if (typeof index === 'number') {
+        this.temporary[index].isrun = true
+      }
       this.queue.add(
         () => {
           const parameter = {
@@ -148,19 +153,51 @@ export default class HFUploader {
       )
     }
 
-    // 计算md5
-    const md5File = async (f) => {
+    const createWorker = async (f, onmessage) => {
       const Worker: any = await import('./file.worker.js')
       const myWorker = new Worker.default()
       myWorker.postMessage({ file: f.originFile })
-      myWorker.onmessage = (e) => {
-        f.md5_file = e.data
-        addFile(f)
-        myWorker.terminate()
-      }
+      myWorker.onmessage = onmessage
     }
 
-    files.forEach((f) => {
+    this.temporary = Array.from({ length: files.length })
+
+    // 计算md5
+    // 按照 md5的计算先后 上传
+    const md5File = (f) =>
+      createWorker(f, function (e) {
+        f.md5_file = e.data
+        addFile(f)
+        this.terminate()
+      })
+
+    // 按照 文件列表上传顺序 开始上传
+    const md5FileOrder = (f, index) =>
+      createWorker(f, function (e) {
+        f.md5_file = e.data
+        this.temporary[index] = { f, isrun: false }
+        if (this.temporary.slice(0, index).every((item) => item)) {
+          let lastIndex = files.length
+          const afterHavData = this.temporary.slice(index, files.length)
+
+          for (let tem in afterHavData) {
+            const item = afterHavData[tem]
+            if (item === undefined) {
+              lastIndex = Number(tem)
+              break
+            }
+          }
+
+          this.temporary.slice(0, lastIndex).forEach((item, ind) => {
+            if (!item.isrun) {
+              addFile(item.f, ind)
+            }
+          })
+        }
+        this.terminate()
+      })
+
+    files.forEach((f, index) => {
       const objFile = fileToObject(f)
       objFile.status = UploadStatus.Waiting
       this.handleChange(objFile)
@@ -170,7 +207,11 @@ export default class HFUploader {
         if (before && before.then) {
           before
             .then(() => {
-              md5File(objFile)
+              if (this.options.isOrder) {
+                md5FileOrder(objFile, index)
+              } else {
+                md5File(objFile)
+              }
             })
             .catch((e) => {
               objFile.status = UploadStatus.Error
