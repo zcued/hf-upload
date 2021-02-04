@@ -172,10 +172,11 @@ export default class HFUploader {
       })
 
     // 按照 文件列表上传顺序 开始上传
-    const md5FileOrder = (f, index) =>
+    // defaultIsRun 如果上传前检查是正常状态 则false，上传前检查状态错误是true 
+    const md5FileOrder = (f, index, defaultIsRun) =>
       createWorker(f, (e, worker) => {
         f.md5_file = e.data
-        this.temporary[index] = { f, isrun: false }
+        this.temporary[index] = { f, isrun: defaultIsRun }
         if (this.temporary.slice(0, index).every((item) => item)) {
           let lastIndex = files.length
           const afterHavData = this.temporary.slice(index, files.length)
@@ -208,7 +209,7 @@ export default class HFUploader {
           before
             .then(() => {
               if (this.options.isOrder) {
-                md5FileOrder(objFile, index)
+                md5FileOrder(objFile, index, false)
               } else {
                 md5File(objFile)
               }
@@ -217,9 +218,16 @@ export default class HFUploader {
               objFile.status = UploadStatus.Error
               objFile.errorMessage = typeof e === 'string' ? e : 'error'
               this.handleFailed(objFile)
+              if (this.options.isOrder) {
+                md5FileOrder({}, index, true)
+              }
             })
         } else {
-          md5File(objFile)
+          if (this.options.isOrder) {
+            md5FileOrder(objFile, index, false)
+          } else {
+            md5File(objFile)
+          }
         }
       })
     })
