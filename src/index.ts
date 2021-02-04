@@ -172,7 +172,7 @@ export default class HFUploader {
       })
 
     // 按照 文件列表上传顺序 开始上传
-    // defaultIsRun 如果上传前检查是正常状态 则false，上传前检查状态错误是true 
+    // defaultIsRun 如果上传前检查是正常状态 则false，上传前检查状态错误是true
     const md5FileOrder = (f, index, defaultIsRun) =>
       createWorker(f, (e, worker) => {
         f.md5_file = e.data
@@ -219,7 +219,7 @@ export default class HFUploader {
               objFile.errorMessage = typeof e === 'string' ? e : 'error'
               this.handleFailed(objFile)
               if (this.options.isOrder) {
-                md5FileOrder({}, index, true)
+                md5FileOrder(objFile, index, true)
               }
             })
         } else {
