@@ -162,19 +162,29 @@ export default class HFUploader {
       myWorker.onmessage = (e) => onmessage(e, myWorker)
     }
 
-    this.temporary = Array.from({ length: files.length })
+    const originLength = this.temporary.length
 
-    const justUpload = (f, index, defaultIsRun) => {
+    if (originLength > 0) {
+      this.temporary = [
+        ...this.temporary,
+        ...Array.from({ length: files.length }),
+      ]
+    } else {
+      this.temporary = Array.from({ length: files.length })
+    }
+
+    const justUpload = (f, _index, defaultIsRun) => {
       createWorker(f, (e, myWorker) => {
         this.md5Tem[f.uid] = e.data
         myWorker.terminate()
       })
-
+      const index = _index + originLength
       this.temporary[index] = { f, isrun: defaultIsRun }
-      if (this.temporary.slice(0, index).every((item) => item)) {
-        let lastIndex = files.length
-        const afterHavData = this.temporary.slice(index, files.length)
+      const newLength = this.temporary.length
 
+      if (this.temporary.slice(0, index).every((item) => item)) {
+        let lastIndex = newLength
+        const afterHavData = this.temporary.slice(index, newLength)
         for (let tem in afterHavData) {
           const item = afterHavData[tem]
           if (item === undefined) {
@@ -182,7 +192,6 @@ export default class HFUploader {
             break
           }
         }
-
         this.temporary.slice(0, lastIndex).forEach((item, ind) => {
           if (!item.isrun) {
             addFile(item.f, ind)
@@ -237,14 +246,12 @@ export default class HFUploader {
     file.md5_file = this.md5Tem[file.uid]
     const after = this.afterUpload && this.afterUpload(file)
     if (after && after.then) {
-      after
-        .then(success)
-        .catch((err) => {
-          file.status = UploadStatus.Error
-          file.errorMessage =
-            typeof err === 'string' ? err : this.options.errorText
-          this.handleFailed(file)
-        })
+      after.then(success).catch((err) => {
+        file.status = UploadStatus.Error
+        file.errorMessage =
+          typeof err === 'string' ? err : this.options.errorText
+        this.handleFailed(file)
+      })
     } else {
       success()
     }
