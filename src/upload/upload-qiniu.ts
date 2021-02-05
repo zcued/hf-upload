@@ -24,6 +24,7 @@ export default class QiniuUpload {
   afterUpload: Function
   needUpdateParams: Function
   currentSubscription: Subscription
+  md5MapId: { [key: string]: string }
 
   constructor({
     file,
@@ -152,24 +153,8 @@ export default class QiniuUpload {
       const complete = (res) => {
         this.file.response = res
         this.file.oss_path = res.key
-
-        const after = this.afterUpload && this.afterUpload(this.file)
-        if (after && after.then) {
-          after
-            .then(() => {
-              this.finish(this.file)
-              resolve()
-            })
-            .catch((err) => {
-              this.setError(
-                typeof err === 'string' ? err : this.options.errorText
-              )
-              reject(err)
-            })
-        } else {
-          this.finish(this.file)
-          resolve()
-        }
+        this.finish(this.file)
+        resolve()
       }
 
       const subscribe = observable.subscribe({ next, error, complete })

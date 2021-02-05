@@ -36,6 +36,7 @@ export default class HFUploader {
   onFailed: MultiFileFn
   onComplete: MultiFileFn
   temporary: Array<any>
+  md5Tem: { [key: string]: any }
 
   constructor({
     files,
@@ -67,6 +68,7 @@ export default class HFUploader {
     this.beforeUpload = beforeUpload
     this.needUpdateParams = needUpdateParams
     this.temporary = []
+    this.md5Tem = {}
   }
 
   // 更新参数
@@ -162,41 +164,32 @@ export default class HFUploader {
 
     this.temporary = Array.from({ length: files.length })
 
-    // 计算md5
-    // 按照 md5的计算先后 上传
-    const md5File = (f) =>
-      createWorker(f, function (e) {
-        f.md5_file = e.data
-        addFile(f)
-        this.terminate()
+    const justUpload = (f, index, defaultIsRun) => {
+      createWorker(f, (e, myWorker) => {
+        this.md5Tem[f.uid] = e.data
+        myWorker.terminate()
       })
 
-    // 按照 文件列表上传顺序 开始上传
-    // defaultIsRun 如果上传前检查是正常状态 则false，上传前检查状态错误是true
-    const md5FileOrder = (f, index, defaultIsRun) =>
-      createWorker(f, (e, worker) => {
-        f.md5_file = e.data
-        this.temporary[index] = { f, isrun: defaultIsRun }
-        if (this.temporary.slice(0, index).every((item) => item)) {
-          let lastIndex = files.length
-          const afterHavData = this.temporary.slice(index, files.length)
+      this.temporary[index] = { f, isrun: defaultIsRun }
+      if (this.temporary.slice(0, index).every((item) => item)) {
+        let lastIndex = files.length
+        const afterHavData = this.temporary.slice(index, files.length)
 
-          for (let tem in afterHavData) {
-            const item = afterHavData[tem]
-            if (item === undefined) {
-              lastIndex = Number(tem)
-              break
-            }
+        for (let tem in afterHavData) {
+          const item = afterHavData[tem]
+          if (item === undefined) {
+            lastIndex = Number(tem)
+            break
           }
-
-          this.temporary.slice(0, lastIndex).forEach((item, ind) => {
-            if (!item.isrun) {
-              addFile(item.f, ind)
-            }
-          })
         }
-        worker.terminate()
-      })
+
+        this.temporary.slice(0, lastIndex).forEach((item, ind) => {
+          if (!item.isrun) {
+            addFile(item.f, ind)
+          }
+        })
+      }
+    }
 
     files.forEach((f, index) => {
       const objFile = fileToObject(f)
@@ -208,26 +201,16 @@ export default class HFUploader {
         if (before && before.then) {
           before
             .then(() => {
-              if (this.options.isOrder) {
-                md5FileOrder(objFile, index, false)
-              } else {
-                md5File(objFile)
-              }
+              justUpload(objFile, index, false)
             })
             .catch((e) => {
               objFile.status = UploadStatus.Error
               objFile.errorMessage = typeof e === 'string' ? e : 'error'
               this.handleFailed(objFile)
-              if (this.options.isOrder) {
-                md5FileOrder(objFile, index, true)
-              }
+              justUpload(objFile, index, true)
             })
         } else {
-          if (this.options.isOrder) {
-            md5FileOrder(objFile, index, false)
-          } else {
-            md5File(objFile)
-          }
+          justUpload(objFile, index, false)
         }
       })
     })
@@ -242,11 +225,28 @@ export default class HFUploader {
   }
 
   handleSucceed = (file: UploadFile) => {
-    const { fileList, onSucceed, checkComplete } = this
-    this.fileList = updateFileLists(file, fileList)
-    checkComplete(file.uid)
-    if (onSucceed) {
-      onSucceed({ file, fileList })
+    const success = () => {
+      const { fileList, onSucceed, checkComplete } = this
+      this.fileList = updateFileLists(file, fileList)
+      checkComplete(file.uid)
+      if (onSucceed) {
+        onSucceed({ file, fileList })
+      }
+    }
+
+    file.md5_file = this.md5Tem[file.uid]
+    const after = this.afterUpload && this.afterUpload(file)
+    if (after && after.then) {
+      after
+        .then(success)
+        .catch((err) => {
+          file.status = UploadStatus.Error
+          file.errorMessage =
+            typeof err === 'string' ? err : this.options.errorText
+          this.handleFailed(file)
+        })
+    } else {
+      success()
     }
   }
 

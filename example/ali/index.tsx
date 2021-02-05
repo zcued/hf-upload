@@ -30,7 +30,7 @@ function AliExample() {
       },
       beforeUpload: (file) => {
         return new Promise((resolve, reject) => {
-          const isOutRange = file.file_size / 1024 / 1024 > 5
+          const isOutRange = file.file_size / 1024 / 1024 > 10
           if (isOutRange) {
             return reject('上传文件过大')
           }
