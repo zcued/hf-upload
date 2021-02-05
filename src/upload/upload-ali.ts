@@ -106,25 +106,8 @@ export default class AliUpload {
           this.file.response = res
           this.file.oss_path = res.name
           this.currentCheckpoint = null
-          const after = this.afterUpload && this.afterUpload(this.file)
-
-          if (after && after.then) {
-            after
-              .then(() => {
-                finish(this.file)
-                resolve()
-              })
-              .catch((err) => {
-                this.file.status = UploadStatus.Error
-                this.file.errorMessage =
-                  typeof err === 'string' ? err : this.options.errorText
-                this.onFailed(this.file)
-                reject(err)
-              })
-          } else {
-            finish(this.file)
-            resolve()
-          }
+          finish(this.file)
+          resolve()
         })
         .catch((err) => {
           // 暂停
