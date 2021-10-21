@@ -156,7 +156,7 @@ export default class HFUploader {
     }
 
     const createWorker = async (f, onmessage) => {
-      const FileWorker = new Worker(new URL('./file.worker.js', import.meta.url));
+      const FileWorker = new Worker('./file.worker.js');
       FileWorker.postMessage({ file: f.originFile })
       FileWorker.onmessage = (e) => onmessage(e, FileWorker)
     }
