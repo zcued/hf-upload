@@ -106,7 +106,7 @@ export default class PQueue {
       const existingResolve = this._resolveEmpty
       this._resolveEmpty = () => {
         existingResolve()
-        resolve()
+        resolve(null)
       }
     })
   }

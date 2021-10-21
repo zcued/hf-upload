@@ -25,7 +25,7 @@ function AliExample() {
       needUpdateParams: (file) => {
         return new Promise((resolve, reject) => {
           // 重新请求参数 updateParams
-          resolve()
+          resolve(null)
         })
       },
       beforeUpload: (file) => {
@@ -34,7 +34,7 @@ function AliExample() {
           if (isOutRange) {
             return reject('上传文件过大')
           }
-          resolve()
+          resolve(null)
         })
       },
     })

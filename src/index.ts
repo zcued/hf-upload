@@ -156,10 +156,9 @@ export default class HFUploader {
     }
 
     const createWorker = async (f, onmessage) => {
-      const Worker: any = await import('./file.worker.js')
-      const myWorker = new Worker.default()
-      myWorker.postMessage({ file: f.originFile })
-      myWorker.onmessage = (e) => onmessage(e, myWorker)
+      const FileWorker = new Worker(new URL('./file.worker.js', import.meta.url));
+      FileWorker.postMessage({ file: f.originFile })
+      FileWorker.onmessage = (e) => onmessage(e, FileWorker)
     }
 
     const originLength = this.temporary.length

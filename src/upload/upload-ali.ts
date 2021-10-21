@@ -107,7 +107,7 @@ export default class AliUpload {
           this.file.oss_path = res.name
           this.currentCheckpoint = null
           finish(this.file)
-          resolve()
+          resolve(null)
         })
         .catch((err) => {
           // 暂停
