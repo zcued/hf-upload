@@ -154,7 +154,7 @@ export default class QiniuUpload {
         this.file.response = res
         this.file.oss_path = res.key
         this.finish(this.file)
-        resolve()
+        resolve(null)
       }
 
       const subscribe = observable.subscribe({ next, error, complete })

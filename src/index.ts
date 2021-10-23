@@ -1,27 +1,15 @@
+/* eslint-disable no-param-reassign */
 import PQueue from './p-queue'
 import Upload from './upload'
-import {
-  updateFileLists,
-  deleteFile,
-  deleteId,
-  preproccessFile,
-  fileToObject,
-} from './util'
+import { updateFileLists, deleteFile, deleteId, preproccessFile, fileToObject } from './util'
 import defaultOptions from './default'
 import { UploadStatus } from './enums'
-import {
-  UploadFile,
-  UploadOptions,
-  UploadProps,
-  MultiFileFn,
-  PromiseFn,
-  Noop,
-} from './types'
-
+import { UploadFile, UploadOptions, UploadProps, MultiFileFn, PromiseFn, Noop } from './types'
+import { WORKER_PATH } from './constants'
 export * from './types'
 
 export default class HFUploader {
-  map: Object = {}
+  map: any
   ids: Array<string> = []
   params: any
   queue: PQueue
@@ -36,12 +24,14 @@ export default class HFUploader {
   onFailed: MultiFileFn
   onComplete: MultiFileFn
   temporary: Array<any>
+  md5: boolean
   md5Tem: { [key: string]: any }
 
   constructor({
     files,
     options = {},
     params,
+    md5 = true,
     onStart,
     onChange,
     onSucceed,
@@ -68,6 +58,7 @@ export default class HFUploader {
     this.beforeUpload = beforeUpload
     this.needUpdateParams = needUpdateParams
     this.temporary = []
+    this.md5 = md5
     this.md5Tem = {}
   }
 
@@ -75,7 +66,7 @@ export default class HFUploader {
   updateParams = (params) => {
     this.params = { ...params }
 
-    for (let uid in this.map) {
+    for (const uid in this.map) {
       if (this.map[uid]) {
         this.map[uid].updateParams(params)
       }
@@ -155,29 +146,33 @@ export default class HFUploader {
       )
     }
 
-    const createWorker = async (f, onmessage) => {
-      const Worker: any = await import('./file.worker.js')
-      const myWorker = new Worker.default()
-      myWorker.postMessage({ file: f.originFile })
-      myWorker.onmessage = (e) => onmessage(e, myWorker)
-    }
-
     const originLength = this.temporary.length
 
     if (originLength > 0) {
-      this.temporary = [
-        ...this.temporary,
-        ...Array.from({ length: files.length }),
-      ]
+      this.temporary = [...this.temporary, ...Array.from({ length: files.length })]
     } else {
       this.temporary = Array.from({ length: files.length })
     }
 
     const justUpload = (f, _index, defaultIsRun) => {
-      createWorker(f, (e, myWorker) => {
-        this.md5Tem[f.uid] = e.data
-        myWorker.terminate()
-      })
+      if (this.md5) {
+        const createWorker = async (file, onmessage) => {
+          fetch(WORKER_PATH)
+            .then((response) => response.blob())
+            .then((blob) => {
+              const objectURL = URL.createObjectURL(blob)
+              const FileWorker = new Worker(objectURL)
+              FileWorker.postMessage({ file: file.originFile })
+              FileWorker.onmessage = (e) => onmessage(e, FileWorker)
+            })
+        }
+
+        createWorker(f, (e, myWorker) => {
+          this.md5Tem[f.uid] = e.data
+          myWorker.terminate()
+        })
+      }
+
       const index = _index + originLength
       this.temporary[index] = { f, isrun: defaultIsRun }
       const newLength = this.temporary.length
@@ -185,7 +180,7 @@ export default class HFUploader {
       if (this.temporary.slice(0, index).every((item) => item)) {
         let lastIndex = newLength
         const afterHavData = this.temporary.slice(index, newLength)
-        for (let tem in afterHavData) {
+        for (const tem in afterHavData) {
           const item = afterHavData[tem]
           if (item === undefined) {
             lastIndex = Number(tem)
@@ -243,13 +238,15 @@ export default class HFUploader {
       }
     }
 
-    file.md5_file = this.md5Tem[file.uid]
+    if (this.md5) {
+      file.md5_file = this.md5Tem[file.uid]
+    }
+
     const after = this.afterUpload && this.afterUpload(file)
     if (after && after.then) {
       after.then(success).catch((err) => {
         file.status = UploadStatus.Error
-        file.errorMessage =
-          typeof err === 'string' ? err : this.options.errorText
+        file.errorMessage = typeof err === 'string' ? err : this.options.errorText
         this.handleFailed(file)
       })
     } else {

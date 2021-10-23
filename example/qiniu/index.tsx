@@ -32,7 +32,7 @@ function QiniuExample() {
       needUpdateParams: (file) => {
         return new Promise((resolve, reject) => {
           // 重新请求参数 updateParams
-          resolve()
+          resolve(null)
         })
       },
       beforeUpload: (file) => {
@@ -43,7 +43,7 @@ function QiniuExample() {
             return reject('文件类型不支持')
           }
           file.type = 'video'
-          resolve()
+          resolve(null)
         })
       },
     })

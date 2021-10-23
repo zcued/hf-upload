@@ -67,6 +67,8 @@ export interface UploadProps {
   options?: UploadOptions
   /** 创建OSS参数 */
   params?: any
+  /** 是否计算md5 */
+  md5?: boolean
   /** 上传开始 */
   onStart?: Noop
   /** beforeUpload */
@@ -87,7 +89,7 @@ export interface UploadProps {
 
 export interface AliProps {
   /** 创建OSS参数 */
-  params: Object
+  params: any
   /** 上传的文件 */
   file: UploadFile
   /** 配置项 */

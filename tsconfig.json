@@ -11,9 +11,13 @@
     "allowSyntheticDefaultImports": true,
     "types": [],
     "typeRoots": ["./node_modules/@types"],
-    "lib": ["dom", "es2015", "es2016", "es2017"],
+    "lib": ["DOM", "ESNext"],
     "declaration": true,
     "declarationDir": "declaration"
   },
+  "exclude": [
+    "lib",
+    "node_modules"
+  ],
   "include": ["./src"]
 }
