@@ -1,7 +1,6 @@
 module.exports = {
   extends: '@zcool/eslint-config-browser-ts',
-  parserOptions: { project: './tsconfig.json' },
-  include: [".eslintrc.js", "webpack.config.js", "**/*.ts", "**/*.js", "**/*.tsx", "*.js"],
+  parserOptions: { project: './tsconfig.eslint.json' },
   rules: {
     'react/react-in-jsx-scope': [0],
   },

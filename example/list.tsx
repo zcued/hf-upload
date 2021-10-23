@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import React, { memo, useState } from 'react'
 
 export default memo(function List({
@@ -44,14 +45,7 @@ export default memo(function List({
         <span className="action" onClick={() => onAbort(file.uid)}>
           {parseInt(file.percent, 10)}%
         </span>
-        <span
-          className="action"
-          onClick={
-            isBreak
-              ? () => handleReupload(file.uid)
-              : () => handleAbort(file.uid)
-          }
-        >
+        <span className="action" onClick={isBreak ? () => handleReupload(file.uid) : () => handleAbort(file.uid)}>
           {isBreak ? '恢复' : '暂停'}
         </span>
       </>
@@ -87,6 +81,7 @@ const getFileSize = (bytes, decimals = 2): string => {
   const sz = 'BKMGTP'
   const factor = Math.floor((bytes.toString().length - 1) / 3)
   if (factor === 0 || factor === 1) {
+    // eslint-disable-next-line no-param-reassign
     decimals = 0
   }
 

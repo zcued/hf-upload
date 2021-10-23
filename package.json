@@ -1,6 +1,6 @@
 {
   "name": "hf-upload",
-  "version": "3.0.1",
+  "version": "3.0.4",
   "description": "An upload tool",
   "main": "./lib/index.js",
   "types": "./declaration/index.d.ts",
@@ -21,18 +21,34 @@
     "ali-oss",
     "qiniu"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
   "author": "LIX",
   "license": "MIT",
+  "prettier": "@zcool/prettier-config",
   "devDependencies": {
     "@babel/runtime-corejs2": "^7.11.2",
     "@types/react": "^17.0.31",
     "@types/react-dom": "^17.0.10",
     "@zcool/eslint-config-browser-ts": "^1.1.7-alpha.2",
+    "@zcool/prettier-config": "^1.0.0-rc.2",
+    "babel-loader": "^8.2.3",
     "css-loader": "^6.4.0",
     "eslint": "^7.6.0",
     "eslint-config-zcool": "^1.5.0",
     "html-webpack-plugin": "^5.4.0",
+    "lint-staged": "^11.2.3",
     "node-sass": "^6.0.1",
+    "prettier": "^2.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.0",
