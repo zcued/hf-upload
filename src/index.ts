@@ -157,9 +157,14 @@ export default class HFUploader {
     const justUpload = (f, _index, defaultIsRun) => {
       if (this.md5) {
         const createWorker = async (file, onmessage) => {
-          const FileWorker = new Worker(new URL('./file.worker.js', import.meta.url))
-          FileWorker.postMessage({ file: file.originFile })
-          FileWorker.onmessage = (e) => onmessage(e, FileWorker)
+          fetch(WORKER_PATH)
+            .then((response) => response.blob())
+            .then((blob) => {
+              const objectURL = URL.createObjectURL(blob)
+              const FileWorker = new Worker(objectURL)
+              FileWorker.postMessage({ file: file.originFile })
+              FileWorker.onmessage = (e) => onmessage(e, FileWorker)
+            })
         }
 
         createWorker(f, (e, myWorker) => {

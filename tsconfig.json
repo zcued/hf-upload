@@ -3,7 +3,7 @@
     "jsx": "react",
     "baseUrl": ".",
     "target": "es6",
-    "module": "esnext",
+    "module": "commonjs",
     "outDir": "lib",
     "allowJs": true,
     "esModuleInterop": true,
