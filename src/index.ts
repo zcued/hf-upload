@@ -26,6 +26,7 @@ export default class HFUploader {
   temporary: Array<any>
   md5: boolean
   md5Tem: { [key: string]: any }
+  objectURL: string
 
   constructor({
     files,
@@ -60,6 +61,11 @@ export default class HFUploader {
     this.temporary = []
     this.md5 = md5
     this.md5Tem = {}
+    fetch(WORKER_PATH)
+      .then((response) => response.blob())
+      .then((blob) => {
+        this.objectURL = URL.createObjectURL(blob)
+      })
   }
 
   // 更新参数
@@ -156,15 +162,10 @@ export default class HFUploader {
 
     const justUpload = (f, _index, defaultIsRun) => {
       if (this.md5) {
-        const createWorker = async (file, onmessage) => {
-          fetch(WORKER_PATH)
-            .then((response) => response.blob())
-            .then((blob) => {
-              const objectURL = URL.createObjectURL(blob)
-              const FileWorker = new Worker(objectURL)
-              FileWorker.postMessage({ file: file.originFile })
-              FileWorker.onmessage = (e) => onmessage(e, FileWorker)
-            })
+        const createWorker = (file, onmessage) => {
+          const FileWorker = new Worker(this.objectURL)
+          FileWorker.postMessage({ file: file.originFile })
+          FileWorker.onmessage = (e) => onmessage(e, FileWorker)
         }
 
         createWorker(f, (e, myWorker) => {
@@ -238,19 +239,31 @@ export default class HFUploader {
       }
     }
 
-    if (this.md5) {
-      file.md5_file = this.md5Tem[file.uid]
+    const afterAction = () => {
+      const after = this.afterUpload && this.afterUpload(file)
+      if (after && after.then) {
+        after.then(success).catch((err) => {
+          file.status = UploadStatus.Error
+          file.errorMessage = typeof err === 'string' ? err : this.options.errorText
+          this.handleFailed(file)
+        })
+      } else {
+        success()
+      }
     }
 
-    const after = this.afterUpload && this.afterUpload(file)
-    if (after && after.then) {
-      after.then(success).catch((err) => {
-        file.status = UploadStatus.Error
-        file.errorMessage = typeof err === 'string' ? err : this.options.errorText
-        this.handleFailed(file)
-      })
+    if (this.md5) {
+      if (this.md5Tem[file.uid]) {
+        file.md5_file = this.md5Tem[file.uid]
+        afterAction()
+      } else {
+        // 如果上传成功后还没有得到md5，再一次执行handleSucceed
+        setTimeout(() => {
+          this.handleSucceed(file)
+        }, 1000)
+      }
     } else {
-      success()
+      afterAction()
     }
   }
 

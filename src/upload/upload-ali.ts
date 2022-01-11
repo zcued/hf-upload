@@ -1,16 +1,10 @@
 import OSS from 'ali-oss'
 import { MIN_PART_SIZE } from '../constants'
 import { UploadStatus } from '../enums'
-import {
-  UploadFile,
-  UploadOptions,
-  AliProps,
-  SingleFileFn,
-  PromiseFn,
-} from '../types'
+import { UploadFile, UploadOptions, AliProps, SingleFileFn, PromiseFn } from '../types'
 
 export default class AliUpload {
-  params: Object
+  params: any
   options: UploadOptions
   timeout: number
   partSize: number
@@ -25,16 +19,7 @@ export default class AliUpload {
   afterUpload: PromiseFn
   needUpdateParams: PromiseFn
 
-  constructor({
-    file,
-    params,
-    options,
-    onChange,
-    onSucceed,
-    onFailed,
-    afterUpload,
-    needUpdateParams,
-  }: AliProps) {
+  constructor({ file, params, options, onChange, onSucceed, onFailed, afterUpload, needUpdateParams }: AliProps) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
     }
@@ -58,10 +43,7 @@ export default class AliUpload {
   }
 
   uploadFile = (client) => {
-    if (
-      !this.uploadFileClient ||
-      Object.keys(this.uploadFileClient).length === 0
-    ) {
+    if (!this.uploadFileClient || Object.keys(this.uploadFileClient).length === 0) {
       this.uploadFileClient = client
     }
 
@@ -86,7 +68,7 @@ export default class AliUpload {
     const { uploadPath = 'tmp' } = this.options
     const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
 
-    let opts: any = {
+    const opts: any = {
       progress,
       mime: this.file.mime_type,
       partSize: this.partSize * 1024,
@@ -116,23 +98,18 @@ export default class AliUpload {
           }
 
           const error = err.name.toLowerCase()
-          const isParamsExpired =
-            error.indexOf('securitytokenexpirederror') !== -1 ||
-            error.indexOf('invalidaccesskeyiderror') !== -1
+          const isParamsExpired = ['securitytokenexpirederror', 'invalidaccesskeyiderror'].some((item) =>
+            item.includes(error)
+          )
           const isTimeout = error.indexOf('connectiontimeout') !== -1
 
           // 参数过期
           if (isParamsExpired) {
             this.uploadFileClient = null
-            this.retryCount++
-            if (this.retryCount < this.retryCountMax) {
-              const fn =
-                this.needUpdateParams && this.needUpdateParams(this.file)
-              if (fn && fn.then) {
-                fn.then(() => this.startUpload())
-              } else {
-                this.startUpload()
-              }
+            const fn = this.needUpdateParams && this.needUpdateParams(this.file)
+
+            if (fn && fn.then) {
+              fn.then(() => this.startUpload())
             } else {
               this.file.status = UploadStatus.Error
               this.file.errorMessage = 'params is expired'
@@ -150,7 +127,7 @@ export default class AliUpload {
               this.partSize = size > MIN_PART_SIZE ? size : MIN_PART_SIZE
               this.uploadFile('')
             } else if (this.retryCount < this.retryCountMax) {
-              this.retryCount++
+              this.retryCount = +1
               this.uploadFile('')
             } else {
               this.file.status = UploadStatus.Error
