@@ -54,6 +54,10 @@ export interface UploadFile {
   oss_path?: string
   /** 文件所属类型 */
   type?: string
+  /** 暂停状态 */
+  isBreak?: boolean
+  /** 是否超出 */
+  overSize?: boolean
 }
 
 export interface Info {
