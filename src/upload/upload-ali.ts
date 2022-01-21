@@ -65,8 +65,8 @@ export default class AliUpload {
     }
 
     const fileName = encodeURI(this.file.name)
-    const { uploadPath = 'tmp' } = this.options
-    const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
+    const { uploadPath = 'tmp', renderKey, acl } = this.options
+    const key = renderKey ? renderKey(this.file) : `${uploadPath}/${this.file.uid}.${this.file.extension}`
 
     const opts: any = {
       progress,
@@ -84,7 +84,10 @@ export default class AliUpload {
     return new Promise((resolve, reject) => {
       this.uploadFileClient
         .multipartUpload(key, this.file.originFile, opts)
-        .then((res) => {
+        .then(async (res) => {
+          if (acl) {
+            await this.uploadFileClient.putACL(res.name, acl.value)
+          }
           this.file.response = res
           this.file.oss_path = res.name
           this.currentCheckpoint = null

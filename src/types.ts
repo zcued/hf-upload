@@ -15,6 +15,13 @@ export interface UploadOptions {
   uploadPath?: string
   /** 是否按照文件顺序进行上传 */
   isOrder?: boolean
+  /** 自定义上传路径 */
+  renderKey?: (file: UploadFile) => string
+  /** 设置文件访问权限 */
+  acl?: {
+    /** 继承Bucket｜私有｜公共读｜公共读写 */
+    value: 'default' | 'private' | 'public-read' | 'public-read-write'
+  }
 }
 
 export interface UploadFile {
