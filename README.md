@@ -97,9 +97,11 @@ ReactDOM.render(<Example />, container)
 | timeout       | number  | 60\*1000       | Overtime time (ms)                                                                                    |
 | retryCountMax | number  | 3              | Retry times out                                                                                       |
 | errorText     | string  | 网络故障请重试 | Error message                                                                                         |
-| rule          | Object  | {}             | Select upload target by file type. If not specified, upload to Ali by default. eg: {'video': 'qiniu'} |
+| rule          | object  | {}             | Select upload target by file type. If not specified, upload to Ali by default. eg: {'video': 'qiniu'} |
 | uploadPath    | string  | tmp            | Upload to the specified directory. eg:{ uploadPath: 'tmp/dev' }                                       |
 | isOrder       | boolean | false          | Set whether the file upload sequence is consistent with the file sequence                             |
+| renderKey     | function | void          | render custome key                                                                                    |
+| acl       | object | null          | set ACL https://www.alibabacloud.com/help/zh/doc-detail/144047.htm?spm=a3c0i.23458820.2359477120.7.7bff6e9bls2pX6                             |
 
 ### <span id = "method">Method</span>
 
