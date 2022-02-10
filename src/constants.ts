@@ -19,7 +19,4 @@ export const ERROR_TEXT = '网络故障请重试'
 /** qiniu分片上传时，分片大小为1 单位MB */
 export const QINIU_CHUNK_SIZE = 1
 
-/** 默认上传顺序是MD5计算完的顺序 */
-export const IS_ORDER = false
-
 export const WORKER_PATH = 'https://static.hellorf.com/fe/hf-upload/file.worker.js'
