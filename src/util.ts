@@ -1,9 +1,15 @@
+/* eslint-disable no-param-reassign */
 export function noop() {
   return null
 }
 
-export const updateFileLists = (file, fileLists) => {
+export const updateFileLists = (file, fileLists, delIds) => {
+  if (delIds.includes(file.uid)) {
+    return fileLists.filter((_) => _.uid !== file.uid)
+  }
+
   const i = fileLists.findIndex((_) => _.uid === file.uid)
+  // eslint-disable-next-line no-param-reassign
   i > -1 ? (fileLists[i] = { ...file }) : fileLists.push(file)
   return fileLists
 }
@@ -20,6 +26,7 @@ export function getUid() {
   let count = 0
 
   function getkey() {
+    // eslint-disable-next-line no-plusplus
     return `hf-upload-${new Date().valueOf()}-${count++}`
   }
 
@@ -111,8 +118,8 @@ const getImgPreview = (file, callback) => {
     const img = new Image()
     img.src = blobUrl
     img.onload = () => {
-      const width = img.width
-      const height = img.height
+      const { width } = img
+      const { height } = img
       const aspect = width / height
       callback(blobUrl, width, height, aspect, value)
     }
@@ -136,17 +143,14 @@ export const preproccessFile = (file) => {
 
     function preview(f) {
       f.thumbUrl = ''
-      getImgPreview(
-        f.originFile,
-        (previewDataUrl, width, height, aspect, value = 1) => {
-          f.thumbUrl = previewDataUrl
-          f.width = width
-          f.height = height
-          f.aspect = aspect
-          f.transform = rotation[value]
-          resolve(f)
-        }
-      )
+      getImgPreview(f.originFile, (previewDataUrl, width, height, aspect, value = 1) => {
+        f.thumbUrl = previewDataUrl
+        f.width = width
+        f.height = height
+        f.aspect = aspect
+        f.transform = rotation[value]
+        resolve(f)
+      })
     }
 
     if (unPreview) {

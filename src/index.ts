@@ -24,6 +24,7 @@ export default class HFUploader {
   onFailed: MultiFileFn
   onComplete: MultiFileFn
   temporary: Array<any>
+  delIds: string[]
   md5: boolean
   md5Tem: { [key: string]: any }
   objectURL: string
@@ -32,7 +33,6 @@ export default class HFUploader {
     files,
     options = {},
     params,
-    md5 = true,
     onStart,
     onChange,
     onSucceed,
@@ -59,13 +59,17 @@ export default class HFUploader {
     this.beforeUpload = beforeUpload
     this.needUpdateParams = needUpdateParams
     this.temporary = []
-    this.md5 = md5
+    this.md5 = typeof options.md5 === 'boolean' ? options.md5 : defaultOptions.md5
     this.md5Tem = {}
-    fetch(WORKER_PATH)
-      .then((response) => response.blob())
-      .then((blob) => {
-        this.objectURL = URL.createObjectURL(blob)
-      })
+    this.delIds = []
+
+    if (this.md5) {
+      fetch(WORKER_PATH)
+        .then((response) => response.blob())
+        .then((blob) => {
+          this.objectURL = URL.createObjectURL(blob)
+        })
+    }
   }
 
   // 更新参数
@@ -98,6 +102,7 @@ export default class HFUploader {
 
   // 删除
   delete = (uid: string) => {
+    this.delIds.push(uid)
     this.abort(uid)
     this.queue.clearWithId(uid)
     this.fileList = deleteFile(uid, this.fileList)
@@ -152,7 +157,7 @@ export default class HFUploader {
       )
     }
 
-    const originLength = this.temporary.length
+    const originLength = this.temporary.filter((item) => this.ids?.includes(item?.f.uid))?.length
 
     if (originLength > 0) {
       this.temporary = [...this.temporary, ...Array.from({ length: files.length })]
@@ -223,7 +228,7 @@ export default class HFUploader {
 
   handleChange = (file: UploadFile) => {
     const { fileList, onChange } = this
-    this.fileList = updateFileLists(file, fileList)
+    this.fileList = updateFileLists(file, fileList, this.delIds)
     if (onChange) {
       onChange({ file, fileList })
     }
@@ -232,7 +237,7 @@ export default class HFUploader {
   handleSucceed = (file: UploadFile) => {
     const success = () => {
       const { fileList, onSucceed, checkComplete } = this
-      this.fileList = updateFileLists(file, fileList)
+      this.fileList = updateFileLists(file, fileList, this.delIds)
       checkComplete(file.uid)
       if (onSucceed) {
         onSucceed({ file, fileList })
@@ -269,7 +274,7 @@ export default class HFUploader {
 
   handleFailed = (file: UploadFile) => {
     const { fileList, onFailed, checkComplete } = this
-    this.fileList = updateFileLists(file, fileList)
+    this.fileList = updateFileLists(file, fileList, this.delIds)
     checkComplete(file.uid)
     if (onFailed) {
       onFailed({ file, fileList })

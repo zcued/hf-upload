@@ -1,11 +1,4 @@
-import {
-  CONCURRENCY,
-  ALI_CHUNK_SIZE,
-  TIMEOUT,
-  ERROR_TEXT,
-  RETRY_COUNT_MAX,
-  IS_ORDER,
-} from './constants'
+import { CONCURRENCY, ALI_CHUNK_SIZE, TIMEOUT, ERROR_TEXT, RETRY_COUNT_MAX } from './constants'
 import { UploadOptions } from './types'
 
 const defaultOptions: UploadOptions = {
@@ -14,7 +7,7 @@ const defaultOptions: UploadOptions = {
   timeout: TIMEOUT,
   errorText: ERROR_TEXT,
   retryCountMax: RETRY_COUNT_MAX,
-  isOrder: IS_ORDER,
+  md5: true,
 }
 
 export default defaultOptions

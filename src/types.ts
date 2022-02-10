@@ -1,4 +1,6 @@
 export interface UploadOptions {
+  /** 是否开启计算md5功能 */
+  md5?: boolean
   /** 最高并发量 */
   concurrency?: number
   /** 分片大小 M */
@@ -13,8 +15,6 @@ export interface UploadOptions {
   rule?: { [key: string]: string }
   /** 文件上传的临时路径 */
   uploadPath?: string
-  /** 是否按照文件顺序进行上传 */
-  isOrder?: boolean
   /** 自定义上传路径 */
   renderKey?: (file: UploadFile) => string
   /** 设置文件访问权限 */
@@ -78,8 +78,6 @@ export interface UploadProps {
   options?: UploadOptions
   /** 创建OSS参数 */
   params?: any
-  /** 是否计算md5 */
-  md5?: boolean
   /** 上传开始 */
   onStart?: Noop
   /** beforeUpload */

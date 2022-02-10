@@ -1,15 +1,15 @@
 import { noop } from './util'
 
 class Queue {
-  _queue: Array<Function>
-  idMap: Map<string, Function>
+  _queue: Array<() => void>
+  idMap: Map<string, () => void>
 
   constructor() {
     this._queue = []
     this.idMap = new Map()
   }
 
-  enqueue(run: Function, options: { id: any }) {
+  enqueue(run: () => void, options: { id: any }) {
     const { id } = options
     this.idMap.set(id, run)
     this._queue.push(run)
@@ -21,7 +21,7 @@ class Queue {
 
   clearWithId(id: any) {
     const targetRunner = this.idMap.get(id)
-    const runnerIndex = this._queue.findIndex(item => item === targetRunner)
+    const runnerIndex = this._queue.findIndex((item) => item === targetRunner)
     if (runnerIndex === -1) {
       return
     }
@@ -44,10 +44,10 @@ export default class PQueue {
   _resolveEmpty: () => void
 
   constructor(opts: any) {
-    opts = Object.assign(
+    const newOpts = Object.assign(
       {
         concurrency: Infinity,
-        queueClass: Queue
+        queueClass: Queue,
       },
       opts
     )
@@ -56,14 +56,14 @@ export default class PQueue {
       throw new TypeError('Expected `concurrency` to be a number from 1 and up')
     }
 
-    this.queue = new opts.queueClass()
+    this.queue = new newOpts.queueClass()
     this._pendingCount = 0
-    this._concurrency = opts.concurrency
+    this._concurrency = newOpts.concurrency
     this._resolveEmpty = noop
   }
 
   _next() {
-    this._pendingCount--
+    this._pendingCount -= 1
     if (this.queue.size > 0) {
       this.queue.dequeue()()
     } else {
@@ -74,13 +74,13 @@ export default class PQueue {
   add(fn: any, opts: any) {
     return new Promise((resolve, reject) => {
       const run = () => {
-        this._pendingCount++
+        this._pendingCount += 1
         fn()
-          .then(val => {
+          .then((val) => {
             resolve(val)
             this._next()
           })
-          .catch(err => {
+          .catch((err) => {
             reject(err)
             this._next()
           })
@@ -102,7 +102,7 @@ export default class PQueue {
   }
 
   onEmpty() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const existingResolve = this._resolveEmpty
       this._resolveEmpty = () => {
         existingResolve()
