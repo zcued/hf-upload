@@ -15,7 +15,7 @@ export const updateFileLists = (file, fileLists, delIds) => {
 }
 
 export const deleteFile = (uid, fileLists) => {
-  return fileLists.filter((_) => _.uid !== uid)
+  return fileLists.filter((_) => !(_.id === uid || _.uid === uid))
 }
 
 export const deleteId = (uid, ids) => {
