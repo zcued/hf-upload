@@ -156,11 +156,11 @@ export default class HFUploader {
         { id: file.uid }
       )
     }
-
-    const originLength = this.temporary.filter((item) => this.ids?.includes(item?.f.uid))?.length
+    const preTemporary = this.temporary.filter((item) => this.ids?.includes(item?.f.uid))
+    const originLength = preTemporary.length
 
     if (originLength > 0) {
-      this.temporary = [...this.temporary, ...Array.from({ length: files.length })]
+      this.temporary = [...preTemporary, ...Array.from({ length: files.length })]
     } else {
       this.temporary = Array.from({ length: files.length })
     }
