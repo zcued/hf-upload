@@ -64,7 +64,7 @@ export default class HFUploader {
     this.delIds = []
 
     if (this.md5) {
-      fetch(WORKER_PATH)
+      fetch(options.workerUrl || WORKER_PATH)
         .then((response) => response.blob())
         .then((blob) => {
           this.objectURL = URL.createObjectURL(blob)
