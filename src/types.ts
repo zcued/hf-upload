@@ -75,7 +75,7 @@ export interface Info {
 }
 
 export interface UploadProps {
-  files?: Array<UploadFile>
+  files?: Array<UploadFile & { id?: number }>
   /** 配置项 */
   options?: UploadOptions
   /** 创建OSS参数 */
