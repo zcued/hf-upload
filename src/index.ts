@@ -10,7 +10,7 @@ export * from './types'
 
 export default class HFUploader {
   map: any
-  ids: Array<string> = []
+  ids: Array<string | number> = []
   params: any
   queue: PQueue
   options: UploadOptions
@@ -44,6 +44,7 @@ export default class HFUploader {
   }: UploadProps) {
     this.map = {}
     this.fileList = files || []
+    this.ids = files.map((_) => _.id || _.uid) || []
     this.params = { ...params }
     this.queue = new PQueue({
       concurrency: options.concurrency || defaultOptions.concurrency,
