@@ -47,6 +47,8 @@ export interface UploadFile {
   errorMessage?: string
   /** 封面图 */
   thumbUrl?: string
+  /** 原始图 */
+  originUrl?: string
   /** 宽 */
   width?: number
   /** 高 */
