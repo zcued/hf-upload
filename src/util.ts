@@ -65,10 +65,14 @@ const rotation = {
   8: 'rotate(270deg)',
 }
 
+const MEASURE_SIZE = 200
+
 const getImgPreview = (file, callback) => {
   const reader: FileReader = new FileReader()
+
+  const blobUrl = window.URL.createObjectURL(file)
+
   reader.onloadend = () => {
-    const blobUrl = window.URL.createObjectURL(file)
     if (reader.error) {
       console.error('read file error', reader.error)
       if (callback) {
@@ -118,10 +122,31 @@ const getImgPreview = (file, callback) => {
     const img = new Image()
     img.src = blobUrl
     img.onload = () => {
-      const { width } = img
-      const { height } = img
+      const { width, height } = img
       const aspect = width / height
-      callback(blobUrl, width, height, aspect, value)
+      const canvas = document.createElement('canvas')
+      canvas.width = MEASURE_SIZE
+      canvas.height = MEASURE_SIZE
+      canvas.style.cssText = `position: fixed; left: 0; top: 0; width: ${MEASURE_SIZE}px; height: ${MEASURE_SIZE}px; z-index: 9999; display: none;`
+      document.body.appendChild(canvas)
+      const ctx = canvas.getContext('2d')
+      let drawWidth = MEASURE_SIZE
+      let drawHeight = MEASURE_SIZE
+      let offsetX = 0
+      let offsetY = 0
+
+      if (width > height) {
+        drawHeight = height * (MEASURE_SIZE / width)
+        offsetY = -(drawHeight - drawWidth) / 2
+      } else {
+        drawWidth = width * (MEASURE_SIZE / height)
+        offsetX = -(drawWidth - drawHeight) / 2
+      }
+
+      ctx!.drawImage(img, offsetX, offsetY, drawWidth, drawHeight)
+      const dataURL = canvas.toDataURL()
+      document.body.removeChild(canvas)
+      callback(dataURL, blobUrl, width, height, aspect, value)
     }
     img.onerror = () => {
       callback()
@@ -143,8 +168,9 @@ export const preproccessFile = (file) => {
 
     function preview(f) {
       f.thumbUrl = ''
-      getImgPreview(f.originFile, (previewDataUrl, width, height, aspect, value = 1) => {
+      getImgPreview(f.originFile, (previewDataUrl, originUrl, width, height, aspect, value = 1) => {
         f.thumbUrl = previewDataUrl
+        f.originUrl = originUrl
         f.width = width
         f.height = height
         f.aspect = aspect
