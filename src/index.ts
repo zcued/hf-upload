@@ -44,7 +44,7 @@ export default class HFUploader {
   }: UploadProps) {
     this.map = {}
     this.fileList = files || []
-    this.ids = files.map((_) => _.id || _.uid) || []
+    this.ids = files?.map((_) => _.id || _.uid) || []
     this.params = { ...params }
     this.queue = new PQueue({
       concurrency: options.concurrency || defaultOptions.concurrency,
