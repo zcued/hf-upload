@@ -207,7 +207,7 @@ export default class HFUploader {
       objFile.status = UploadStatus.Waiting
       this.handleChange(objFile)
       // 计算 width height aspect transform thumbUrl
-      preproccessFile(objFile).then(() => {
+      preproccessFile(objFile, this.options.previewSize).then(() => {
         const before = this.beforeUpload && this.beforeUpload(objFile)
         if (before && before.then) {
           before

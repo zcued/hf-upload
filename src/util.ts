@@ -65,9 +65,7 @@ const rotation = {
   8: 'rotate(270deg)',
 }
 
-const MEASURE_SIZE = 200
-
-const getImgPreview = (file, callback) => {
+const getImgPreview = (file, previewSize, callback) => {
   const reader: FileReader = new FileReader()
 
   const blobUrl = window.URL.createObjectURL(file)
@@ -122,6 +120,7 @@ const getImgPreview = (file, callback) => {
     const img = new Image()
     img.src = blobUrl
     img.onload = () => {
+      const MEASURE_SIZE = previewSize || 200
       const { width, height } = img
       const aspect = width / height
       const canvas = document.createElement('canvas')
@@ -155,7 +154,7 @@ const getImgPreview = (file, callback) => {
   reader.readAsArrayBuffer(file)
 }
 
-export const preproccessFile = (file) => {
+export const preproccessFile = (file, previewSize) => {
   return new Promise((resolve) => {
     const unPreview =
       typeof document === 'undefined' ||
@@ -168,7 +167,7 @@ export const preproccessFile = (file) => {
 
     function preview(f) {
       f.thumbUrl = ''
-      getImgPreview(f.originFile, (previewDataUrl, originUrl, width, height, aspect, value = 1) => {
+      getImgPreview(f.originFile, previewSize, (previewDataUrl, originUrl, width, height, aspect, value = 1) => {
         f.thumbUrl = previewDataUrl
         f.originUrl = originUrl
         f.width = width
