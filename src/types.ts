@@ -17,6 +17,8 @@ export interface UploadOptions {
   workerUrl?: string
   /** 文件上传的临时路径 */
   uploadPath?: string
+  /** 图片缩略图尺寸 */
+  previewSize?: number
   /** 自定义上传路径 */
   renderKey?: (file: UploadFile) => string
   /** 设置文件访问权限 */
