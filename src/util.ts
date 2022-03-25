@@ -123,26 +123,24 @@ const getImgPreview = (file, previewSize, callback) => {
       const MEASURE_SIZE = previewSize || 200
       const { width, height } = img
       const aspect = width / height
-      const canvas = document.createElement('canvas')
-      canvas.width = MEASURE_SIZE
-      canvas.height = MEASURE_SIZE
-      canvas.style.cssText = `position: fixed; left: 0; top: 0; width: ${MEASURE_SIZE}px; height: ${MEASURE_SIZE}px; z-index: 9999; display: none;`
-      document.body.appendChild(canvas)
-      const ctx = canvas.getContext('2d')
+
       let drawWidth = MEASURE_SIZE
       let drawHeight = MEASURE_SIZE
-      let offsetX = 0
-      let offsetY = 0
 
       if (width > height) {
         drawHeight = height * (MEASURE_SIZE / width)
-        offsetY = -(drawHeight - drawWidth) / 2
       } else {
         drawWidth = width * (MEASURE_SIZE / height)
-        offsetX = -(drawWidth - drawHeight) / 2
       }
 
-      ctx!.drawImage(img, offsetX, offsetY, drawWidth, drawHeight)
+      const canvas = document.createElement('canvas')
+      canvas.width = drawWidth
+      canvas.height = drawHeight
+      canvas.style.backgroundColor = 'transparent'
+      document.body.appendChild(canvas)
+      const ctx = canvas.getContext('2d')
+
+      ctx!.drawImage(img, 0, 0, drawWidth, drawHeight)
       const dataURL = canvas.toDataURL()
       document.body.removeChild(canvas)
       callback(dataURL, blobUrl, width, height, aspect, value)
