@@ -8,6 +8,8 @@ import { UploadFile, UploadOptions, UploadProps, MultiFileFn, PromiseFn, Noop } 
 import { WORKER_PATH } from './constants'
 export * from './types'
 
+let UPLOAD_BLOB
+
 export default class HFUploader {
   map: any
   ids: Array<string | number> = []
@@ -65,9 +67,15 @@ export default class HFUploader {
     this.delIds = []
 
     if (this.md5) {
+      if (UPLOAD_BLOB) {
+        this.objectURL = URL.createObjectURL(UPLOAD_BLOB)
+        return
+      }
+
       fetch(options.workerUrl || WORKER_PATH)
         .then((response) => response.blob())
         .then((blob) => {
+          UPLOAD_BLOB = blob
           this.objectURL = URL.createObjectURL(blob)
         })
     }
