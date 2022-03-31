@@ -5,7 +5,8 @@ import { updateFileLists, deleteFile, deleteId, preproccessFile, fileToObject } 
 import defaultOptions from './default'
 import { UploadStatus } from './enums'
 import { UploadFile, UploadOptions, UploadProps, MultiFileFn, PromiseFn, Noop } from './types'
-import { WORKER_PATH } from './constants'
+import workerContent from './worker.js'
+
 export * from './types'
 
 let UPLOAD_BLOB
@@ -72,12 +73,16 @@ export default class HFUploader {
         return
       }
 
-      fetch(options.workerUrl || WORKER_PATH)
-        .then((response) => response.blob())
-        .then((blob) => {
-          UPLOAD_BLOB = blob
-          this.objectURL = URL.createObjectURL(blob)
-        })
+      // fetch('./worker.js')
+      //   .then((response) => response.blob())
+      //   .then((blob) => {
+      //     // UPLOAD_BLOB = blob
+      //     this.objectURL = URL.createObjectURL(blob)
+      //     console.log(this.objectURL)
+      //   })
+
+      UPLOAD_BLOB = new Blob([workerContent], { type: 'application/javascript' })
+      this.objectURL = URL.createObjectURL(UPLOAD_BLOB)
     }
   }
 
@@ -185,6 +190,7 @@ export default class HFUploader {
         createWorker(f, (e, myWorker) => {
           this.md5Tem[f.uid] = e.data
           myWorker.terminate()
+          if (this.objectURL) URL.revokeObjectURL(this.objectURL)
         })
       }
 

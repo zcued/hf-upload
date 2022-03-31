@@ -13,8 +13,6 @@ export interface UploadOptions {
   errorText?: string
   /** 文件上传的方式 (ali|qiliu) */
   rule?: { [key: string]: string }
-  /** file worker url */
-  workerUrl?: string
   /** 文件上传的临时路径 */
   uploadPath?: string
   /** 图片缩略图尺寸 */
