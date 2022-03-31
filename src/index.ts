@@ -73,14 +73,6 @@ export default class HFUploader {
         return
       }
 
-      // fetch('./worker.js')
-      //   .then((response) => response.blob())
-      //   .then((blob) => {
-      //     // UPLOAD_BLOB = blob
-      //     this.objectURL = URL.createObjectURL(blob)
-      //     console.log(this.objectURL)
-      //   })
-
       UPLOAD_BLOB = new Blob([workerContent], { type: 'application/javascript' })
       this.objectURL = URL.createObjectURL(UPLOAD_BLOB)
     }
