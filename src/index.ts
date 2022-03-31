@@ -182,7 +182,6 @@ export default class HFUploader {
         createWorker(f, (e, myWorker) => {
           this.md5Tem[f.uid] = e.data
           myWorker.terminate()
-          if (this.objectURL) URL.revokeObjectURL(this.objectURL)
         })
       }
 
