@@ -109,7 +109,7 @@ export default class HFUploader {
   // 删除
   delete = (uid: string) => {
     this.delIds.push(uid)
-    this.abort(uid)
+    this.map[uid].deleteUpload()
     this.queue.clearWithId(uid)
     this.fileList = deleteFile(uid, this.fileList)
     this.ids = deleteId(uid, this.ids)
@@ -124,7 +124,7 @@ export default class HFUploader {
     this.queue.clear()
     for (const key in this.map) {
       if (this.map[key]) {
-        this.map[key].cancelUpload()
+        this.map[key].deleteUpload()
       }
     }
   }
@@ -161,6 +161,7 @@ export default class HFUploader {
         },
         { id: file.uid }
       )
+      this.ids.push(file.uid)
     }
     const preTemporary = this.temporary.filter((item) => this.ids?.includes(item?.f.uid))
     const originLength = preTemporary.length
@@ -244,7 +245,7 @@ export default class HFUploader {
     const success = () => {
       const { fileList, onSucceed, checkComplete } = this
       this.fileList = updateFileLists(file, fileList, this.delIds)
-      checkComplete(file.uid)
+      checkComplete()
       if (onSucceed) {
         onSucceed({ file, fileList })
       }
@@ -281,15 +282,14 @@ export default class HFUploader {
   handleFailed = (file: UploadFile) => {
     const { fileList, onFailed, checkComplete } = this
     this.fileList = updateFileLists(file, fileList, this.delIds)
-    checkComplete(file.uid)
+    checkComplete()
     if (onFailed) {
       onFailed({ file, fileList })
     }
   }
 
-  checkComplete = (uid: string) => {
+  checkComplete = () => {
     const { fileList, onComplete } = this
-    this.ids.push(uid)
     const dedupeIds = Array.from(new Set(this.ids))
     if (dedupeIds.length === fileList.length && onComplete) {
       onComplete({ fileList })

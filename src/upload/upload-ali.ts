@@ -110,10 +110,11 @@ export default class AliUpload {
           // 参数过期
           if (isParamsExpired) {
             this.uploadFileClient = null
-            const fn = this.needUpdateParams && this.needUpdateParams(this.file)
-
-            if (fn && fn.then) {
-              fn.then(() => this.startUpload())
+            if (this.needUpdateParams) {
+              setTimeout(async () => {
+                await this.needUpdateParams(this.file)
+                this.reUpload()
+              }, 1000)
             } else {
               this.file.status = UploadStatus.Error
               this.file.errorMessage = 'params is expired'
@@ -155,6 +156,7 @@ export default class AliUpload {
   }
 
   startUpload = () => {
+    if (!this.file) return
     const applyTokenDo = (func: any) => {
       const client = new OSS({
         timeout: this.timeout,
@@ -165,6 +167,11 @@ export default class AliUpload {
     }
 
     return applyTokenDo(this.uploadFile)
+  }
+
+  deleteUpload = () => {
+    this.uploadFileClient = null
+    this.file = null
   }
 
   cancelUpload = () => {
