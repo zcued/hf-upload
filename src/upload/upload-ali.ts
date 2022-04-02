@@ -4,6 +4,7 @@ import { UploadStatus } from '../enums'
 import { UploadFile, UploadOptions, AliProps, SingleFileFn, PromiseFn } from '../types'
 
 export default class AliUpload {
+  deleted: boolean
   params: any
   options: UploadOptions
   timeout: number
@@ -114,7 +115,7 @@ export default class AliUpload {
               setTimeout(async () => {
                 await this.needUpdateParams(this.file)
                 this.reUpload()
-              }, 1000)
+              }, 3000)
             } else {
               this.file.status = UploadStatus.Error
               this.file.errorMessage = 'params is expired'
@@ -156,7 +157,8 @@ export default class AliUpload {
   }
 
   startUpload = () => {
-    if (!this.file) return
+    if (this.deleted) return
+
     const applyTokenDo = (func: any) => {
       const client = new OSS({
         timeout: this.timeout,
@@ -170,8 +172,8 @@ export default class AliUpload {
   }
 
   deleteUpload = () => {
-    this.uploadFileClient = null
-    this.file = null
+    this.cancelUpload()
+    this.deleted = true
   }
 
   cancelUpload = () => {
