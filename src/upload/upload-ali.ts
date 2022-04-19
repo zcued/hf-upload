@@ -74,9 +74,10 @@ export default class AliUpload {
       progress,
       mime: this.file.mime_type,
       partSize: this.partSize * 1024,
-      headers: {
-        'content-disposition': `attachment; filename="${fileName}"`,
-      },
+    }
+
+    if (this.options.asAttachment) {
+      opts.headers['content-disposition'] = `attachment; filename="${fileName}"`
     }
 
     if (this.currentCheckpoint) {
