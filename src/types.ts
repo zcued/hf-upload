@@ -17,6 +17,8 @@ export interface UploadOptions {
   uploadPath?: string
   /** 图片缩略图尺寸 */
   previewSize?: number
+  /** 上传作品是否作为附件处理 */
+  asAttachment?: boolean
   /** 自定义上传路径 */
   renderKey?: (file: UploadFile) => string
   /** 设置文件访问权限 */

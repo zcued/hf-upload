@@ -8,6 +8,7 @@ const defaultOptions: UploadOptions = {
   errorText: ERROR_TEXT,
   retryCountMax: RETRY_COUNT_MAX,
   md5: true,
+  asAttachment: true,
 }
 
 export default defaultOptions
