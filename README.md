@@ -6,7 +6,7 @@
 
 ### Installation
 
-`npm install hf-uploader --save` or `yarn add hf-uploader`
+`npm install hf-uplode --save` or `yarn add hf-uplode`
 
 ### Example
 
@@ -99,10 +99,11 @@ ReactDOM.render(<Example />, container)
 | errorText     | string   | 网络故障请重试 | Error message                                                                                                     |
 | rule          | object   | {}             | Select upload target by file type. If not specified, upload to Ali by default. eg: {'video': 'qiniu'}             |
 | uploadPath    | string   | tmp            | Upload to the specified directory. eg:{ uploadPath: 'tmp/dev' }                                                   |
-| previewSize   | number   | 200            | preview image size                                                                                                |
+| previewSize   | number   | 200            | Preview image size                                                                                                |
 | md5           | boolean  | true           | Calc md5 value                                                                                                    |
-| renderKey     | function | void           | render custome key                                                                                                |
-| acl           | object   | null           | set ACL https://www.alibabacloud.com/help/zh/doc-detail/144047.htm?spm=a3c0i.23458820.2359477120.7.7bff6e9bls2pX6 |
+| renderKey     | function | void           | Render custome key                                                                                                |
+| acl           | object   | null           | Set ACL https://www.alibabacloud.com/help/zh/doc-detail/144047.htm?spm=a3c0i.23458820.2359477120.7.7bff6e9bls2pX6 |
+| asAttachment  | boolean  | true           | Set content-disposition as attachment or not                                                                      |
 
 ### <span id = "method">Method</span>
 
