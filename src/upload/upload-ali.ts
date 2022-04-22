@@ -72,6 +72,7 @@ export default class AliUpload {
 
     const opts: any = {
       progress,
+      headers: { 'content-disposition': '' },
       mime: this.file.mime_type,
       partSize: this.partSize * 1024,
     }
