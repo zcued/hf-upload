@@ -1,6 +1,6 @@
 import React, { useState, useRef, memo } from 'react'
 import HFUpload from '../../src/index'
-import List from '../List'
+import List from '../list'
 import { getFileExt } from '../../src/util'
 import '../style.scss'
 
@@ -29,8 +29,8 @@ function QiniuExample() {
       onFailed: ({ fileList: nextFileList }) => {
         setFileList([...nextFileList])
       },
-      needUpdateParams: (file) => {
-        return new Promise((resolve, reject) => {
+      needUpdateParams: () => {
+        return new Promise((resolve) => {
           // 重新请求参数 updateParams
           resolve(null)
         })
@@ -42,6 +42,7 @@ function QiniuExample() {
           if (!UPLOAD_VIDEO_ACCEPTS.includes(ext.toLocaleUpperCase())) {
             return reject('文件类型不支持')
           }
+          // eslint-disable-next-line no-param-reassign
           file.type = 'video'
           resolve(null)
         })
@@ -67,18 +68,14 @@ function QiniuExample() {
       alert('请输入参数')
       return
     }
-    const files = e.target.files
+    const { files } = e.target
     uploader.current.add([...files])
   }
 
   return (
     <div className="wrap">
       <div className="create-tips">请输入token开始上传</div>
-      <input
-        type="text"
-        placeholder="请输入token"
-        onBlur={(e) => handleChange(e)}
-      />
+      <input type="text" placeholder="请输入token" onBlur={(e) => handleChange(e)} />
       <div className="create-button" onClick={selectFile}>
         <input
           ref={inputRef}
