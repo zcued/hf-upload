@@ -1,3 +1,11 @@
+## 3.3.0 (2022-05-23)
+
+### Bug Fixes
+
+- fix: tsc target to es5
+- rewirte worker.js use function
+- fix: gitignore
+
 ## 3.2.5 (2022-05-23)
 
 ### Bug Fixes
