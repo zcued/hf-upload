@@ -15,4 +15,3 @@ server/*.js
 coverage
 lib
 declaration
-tsconfig.eslint.json
