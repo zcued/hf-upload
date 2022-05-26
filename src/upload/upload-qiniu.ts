@@ -11,6 +11,7 @@ import {
 } from '../types'
 
 export default class QiniuUpload {
+  deleted: boolean
   params: UploadParams
   options: UploadOptions
   timeout: number
@@ -167,12 +168,19 @@ export default class QiniuUpload {
   }
 
   startUpload = () => {
+    if (this.deleted) return
+
     const applyTokenDo = (func: any) => {
       return func()
     }
     return applyTokenDo(this.uploadFile)
   }
-
+  
+  deleteUpload = () => {
+    this.cancelUpload()
+    this.deleted = true
+  }
+  
   cancelUpload = () => {
     this.currentSubscription.unsubscribe()
   }
