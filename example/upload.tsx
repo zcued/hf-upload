@@ -1,6 +1,6 @@
 import React, { memo, useRef } from 'react'
 
-export default memo(function Upload({ onChange }: { onChange: Function }) {
+export default memo(function Upload({ onChange }: { onChange: (files: any[]) => void }) {
   const inputRef = useRef(null)
 
   const selectFile = () => {
@@ -11,8 +11,9 @@ export default memo(function Upload({ onChange }: { onChange: Function }) {
   }
 
   const handleChange = (e) => {
-    const files = e.target.files
+    const { files } = e.target
     onChange([...files])
+    // eslint-disable-next-line no-param-reassign
     e.target.value = null
   }
 

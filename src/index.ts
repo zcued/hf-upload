@@ -5,10 +5,11 @@ import { updateFileLists, deleteFile, deleteId, preproccessFile, fileToObject } 
 import defaultOptions from './default'
 import { UploadStatus } from './enums'
 import { UploadFile, UploadOptions, UploadProps, MultiFileFn, PromiseFn, Noop } from './types'
-import workerContent from './worker.js'
+import createWorkerFn from './worker.js'
 
 export * from './types'
 
+const [, workerContent] = createWorkerFn.toString().split('/* separator */')
 let UPLOAD_BLOB
 
 export default class HFUploader {

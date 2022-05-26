@@ -2,7 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "baseUrl": ".",
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "outDir": "lib",
     "allowJs": true,
@@ -11,13 +11,10 @@
     "allowSyntheticDefaultImports": true,
     "types": [],
     "typeRoots": ["./node_modules/@types"],
-    "lib": ["DOM", "ESNext"],
+    "lib": ["DOM", "ES6", "ES7", "ESNEXT"],
     "declaration": true,
     "declarationDir": "declaration"
   },
-  "exclude": [
-    "lib",
-    "node_modules"
-  ],
+  "exclude": ["lib", "node_modules"],
   "include": ["./src"]
 }
