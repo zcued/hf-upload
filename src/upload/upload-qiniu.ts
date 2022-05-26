@@ -60,7 +60,8 @@ export default class QiniuUpload {
   }
 
   uploadFile = () => {
-    const { uploadPath = 'tmp' } = this.options
+    const { uploadPath: uploadTmpPath } = this.options
+    const uploadPath = (typeof uploadTmpPath === 'string' ? uploadTmpPath : uploadTmpPath?.qiniu) || 'tmp'
     const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
     const putExtra = {
       fname: this.file.originFile.name,
