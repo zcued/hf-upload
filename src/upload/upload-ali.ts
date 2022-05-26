@@ -66,7 +66,8 @@ export default class AliUpload {
     }
 
     const fileName = encodeURI(this.file.name)
-    const { uploadPath = 'tmp', renderKey, acl } = this.options
+    const { uploadPath: uploadTmpPath, renderKey, acl } = this.options
+    const uploadPath = (typeof uploadTmpPath === 'string' ? uploadTmpPath : uploadTmpPath?.ali) || 'tmp'
     const key =
       typeof renderKey === 'function' ? renderKey(this.file) : `${uploadPath}/${this.file.uid}.${this.file.extension}`
 
