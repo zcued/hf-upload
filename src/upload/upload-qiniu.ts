@@ -60,8 +60,10 @@ export default class QiniuUpload {
   }
 
   uploadFile = () => {
-    const { uploadPath = 'tmp' } = this.options
-    const key = `${uploadPath}/${this.file.uid}.${this.file.extension}`
+    const { uploadPath: uploadTmpPath, renderKey } = this.options
+    const uploadPath = (typeof uploadTmpPath === 'string' ? uploadTmpPath : uploadTmpPath?.qiniu) || 'tmp'
+    const key =
+      typeof renderKey === 'function' ? renderKey(this.file) : `${uploadPath}/${this.file.uid}.${this.file.extension}`
     const putExtra = {
       fname: this.file.originFile.name,
       // 分片上传的并发请求量

@@ -98,7 +98,7 @@ ReactDOM.render(<Example />, container)
 | retryCountMax | number   | 3              | Retry times out                                                                                                   |
 | errorText     | string   | 网络故障请重试 | Error message                                                                                                     |
 | rule          | object   | {}             | Select upload target by file type. If not specified, upload to Ali by default. eg: {'video': 'qiniu'}             |
-| uploadPath    | string   | tmp            | Upload to the specified directory. eg:{ uploadPath: 'tmp/dev' }                                                   |
+| uploadPath    | string &#124; { ali?: string; qiniu?: string }  | tmp            | Upload to the specified directory. eg:{ uploadPath: 'tmp/dev' }                                                   |
 | previewSize   | number   | 200            | Preview image size                                                                                                |
 | md5           | boolean  | true           | Calc md5 value                                                                                                    |
 | renderKey     | function | void           | Render custome key                                                                                                |

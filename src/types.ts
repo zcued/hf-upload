@@ -14,7 +14,7 @@ export interface UploadOptions {
   /** 文件上传的方式 (ali|qiliu) */
   rule?: { [key: string]: string }
   /** 文件上传的临时路径 */
-  uploadPath?: string
+  uploadPath?: string | { ali?: string; qiniu?: string }
   /** 图片缩略图尺寸 */
   previewSize?: number
   /** 上传作品是否作为附件处理 */
