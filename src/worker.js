@@ -1,6 +1,5 @@
-export default function createWorker() {
-  /* separator */
-  importScripts('https://cdnout.com/spark-md5/')
+const workerContent = `
+importScripts('https://cdnout.com/spark-md5/')
   onmessage = function (e) {
     function md5File(file) {
       const proto = Object.getPrototypeOf(file)
@@ -42,5 +41,6 @@ export default function createWorker() {
       md5File(e.data.file)
     }
   }
-  /* separator */
-}
+`
+
+export default workerContent
