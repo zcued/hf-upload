@@ -99,7 +99,6 @@ export default class PQueue {
 
   clearWithId(id: any) {
     this.queue.clearWithId(id)
-    this._pendingCount -= 1
   }
 
   onEmpty() {

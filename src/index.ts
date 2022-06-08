@@ -119,11 +119,6 @@ export default class HFUploader {
     if (this.onChange) {
       this.onChange({ fileList: this.fileList })
     }
-
-    if (this.fileList?.length) {
-      const nextFile = this.fileList.find((v) => v.status === UploadStatus.Waiting)
-      nextFile && this.add([nextFile])
-    }
   }
 
   // 清空
