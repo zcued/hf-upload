@@ -1,14 +1,7 @@
 import * as qiniu from 'qiniu-js'
 import { UploadStatus } from '../enums'
 import { CONCURRENCY, QINIU_CHUNK_SIZE } from '../constants'
-import {
-  UploadParams,
-  UploadOptions,
-  UploadFile,
-  Subscription,
-  QiniuProps,
-  QiNiuUploadConfig,
-} from '../types'
+import { UploadParams, UploadOptions, UploadFile, Subscription, QiniuProps, QiNiuUploadConfig } from '../types'
 
 export default class QiniuUpload {
   deleted: boolean
@@ -27,16 +20,7 @@ export default class QiniuUpload {
   currentSubscription: Subscription
   md5MapId: { [key: string]: string }
 
-  constructor({
-    file,
-    params,
-    options,
-    onChange,
-    onSucceed,
-    onFailed,
-    afterUpload,
-    needUpdateParams,
-  }: QiniuProps) {
+  constructor({ file, params, options, onChange, onSucceed, onFailed, afterUpload, needUpdateParams }: QiniuProps) {
     if (!file || !file.originFile) {
       throw new TypeError('A file is required')
     }
@@ -75,7 +59,7 @@ export default class QiniuUpload {
       chunkSize: QINIU_CHUNK_SIZE,
     }
 
-    let opts = {
+    const opts = {
       file: this.file.originFile,
       key,
       params: this.params,
@@ -112,16 +96,15 @@ export default class QiniuUpload {
     const { file, key, params, putExtra, config } = options
 
     return new Promise((resolve, reject) => {
-      const observable = qiniu.upload(
-        file,
-        key,
-        params.qiniuToken,
-        putExtra,
-        config
-      )
+      const observable = qiniu.upload(file, key, params.qiniuToken, putExtra, config)
 
       const next = (res) => {
         this.setProgress(res.total.percent)
+        if (this.deleted) {
+          //外部删除修改deleted属性，通过上传进度监听deleted操作删除动作
+          this.cancelUpload()
+          reject()
+        }
       }
 
       const error = (err) => {
@@ -177,12 +160,9 @@ export default class QiniuUpload {
     }
     return applyTokenDo(this.uploadFile)
   }
-  
   deleteUpload = () => {
-    this.cancelUpload()
     this.deleted = true
   }
-  
   cancelUpload = () => {
     this.currentSubscription.unsubscribe()
   }

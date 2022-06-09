@@ -102,6 +102,7 @@ export default class AliUpload {
         .catch((err) => {
           // 暂停
           if (this.uploadFileClient && this.uploadFileClient.isCancel()) {
+            reject()
             return
           }
 
