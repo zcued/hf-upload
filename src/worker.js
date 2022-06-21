@@ -1,5 +1,5 @@
 const workerContent = `
-importScripts('https://cdnout.com/spark-md5/')
+importScripts('https://static.hellorf.com/fe/hf-upload/spark-md5.js')
   onmessage = function (e) {
     function md5File(file) {
       const proto = Object.getPrototypeOf(file)
