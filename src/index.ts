@@ -122,6 +122,7 @@ export default class HFUploader {
 
   // 清空
   clear = () => {
+    this.delIds = this.fileList.map((v) => v.uid)
     this.fileList = []
     this.queue.clear()
     for (const key in this.map) {

@@ -99,12 +99,12 @@ export default class QiniuUpload {
       const observable = qiniu.upload(file, key, params.qiniuToken, putExtra, config)
 
       const next = (res) => {
-        this.setProgress(res.total.percent)
         if (this.deleted) {
           //外部删除修改deleted属性，通过上传进度监听deleted操作删除动作
           this.cancelUpload()
-          reject()
+          return reject()
         }
+        this.setProgress(res.total.percent)
       }
 
       const error = (err) => {
