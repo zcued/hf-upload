@@ -130,6 +130,7 @@ export default class HFUploader {
     }
     this.queue.clear()
     this.fileList = []
+    this.ids = []
   }
 
   // 重新上传
