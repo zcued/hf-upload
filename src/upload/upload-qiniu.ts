@@ -117,14 +117,9 @@ export default class QiniuUpload {
 
         // 参数过期
         if (err.code === 401) {
-          this.retryCount++
-          if (this.retryCount < this.retryCountMax) {
-            const fn = this.needUpdateParams && this.needUpdateParams(this.file)
-            if (fn && fn.then) {
-              fn.then(() => this.startUpload())
-            } else {
-              this.startUpload()
-            }
+          const fn = this.needUpdateParams && this.needUpdateParams(this.file)
+          if (fn && fn.then) {
+            fn.then(() => this.reUpload().then(resolve).catch(reject))
           } else {
             this.setError('params is expired')
             reject(err)
@@ -169,6 +164,6 @@ export default class QiniuUpload {
 
   reUpload = () => {
     this.retryCount = 0
-    this.startUpload()
+    return this.startUpload()
   }
 }
