@@ -99,7 +99,7 @@ export default class AliUpload {
           finish(this.file)
           resolve(null)
         })
-        .catch((err) => {
+        .catch(async (err) => {
           // 暂停
           if (this.uploadFileClient && this.uploadFileClient.isCancel()) {
             reject()
@@ -116,10 +116,9 @@ export default class AliUpload {
           if (isParamsExpired) {
             this.uploadFileClient = null
             if (this.needUpdateParams) {
-              setTimeout(async () => {
-                await this.needUpdateParams(this.file)
-                this.reUpload()
-              }, 3000)
+              await this.needUpdateParams(this.file)
+
+              this.reUpload().then(resolve).catch(reject)
             } else {
               this.file.status = UploadStatus.Error
               this.file.errorMessage = 'params is expired'
@@ -189,6 +188,6 @@ export default class AliUpload {
   reUpload = () => {
     this.retryCount = 0
     this.uploadFileClient = null
-    this.startUpload()
+    return this.startUpload()
   }
 }
