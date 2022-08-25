@@ -73,7 +73,7 @@ export default class QiniuUpload {
   setProgress = (percent: number) => {
     this.file = {
       ...this.file,
-      percent: percent,
+      percent: percent * 0.99,
       status: UploadStatus.Uploading,
       errorMessage: '',
     }
