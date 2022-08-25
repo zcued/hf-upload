@@ -137,7 +137,17 @@ export default class HFUploader {
   reupload = (uid: string) => {
     const targetUploader = this.map[uid]
     if (targetUploader) {
-      targetUploader.reUpload()
+      const f = this.fileList.find((_) => _.uid === uid)
+      if (f) {
+        f.status = UploadStatus.Waiting
+        this.handleChange(f)
+
+        if (this.md5 && !this.md5Tem[uid]) {
+          this.createWorker(f)
+        }
+      }
+
+      this.queue.add(() => targetUploader.reUpload(), { id: uid })
     }
   }
 
@@ -176,17 +186,8 @@ export default class HFUploader {
     }
 
     const justUpload = (f, _index, defaultIsRun) => {
-      if (this.md5) {
-        const createWorker = (file, onmessage) => {
-          const FileWorker = new Worker(this.objectURL)
-          FileWorker.postMessage({ file: file.originFile })
-          FileWorker.onmessage = (e) => onmessage(e, FileWorker)
-        }
-
-        createWorker(f, (e, myWorker) => {
-          this.md5Tem[f.uid] = e.data
-          myWorker.terminate()
-        })
+      if (!defaultIsRun && this.md5) {
+        this.createWorker(f)
       }
 
       const index = _index + originLength
@@ -233,6 +234,19 @@ export default class HFUploader {
           justUpload(objFile, index, false)
         }
       })
+    })
+  }
+
+  createWorker = (f) => {
+    const createWorkerFn = (file, onmessage) => {
+      const FileWorker = new Worker(this.objectURL)
+      FileWorker.postMessage({ file: file.originFile })
+      FileWorker.onmessage = (e) => onmessage(e, FileWorker)
+    }
+
+    createWorkerFn(f, (e, myWorker) => {
+      this.md5Tem[f.uid] = e.data
+      myWorker.terminate()
     })
   }
 
