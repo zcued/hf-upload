@@ -1,6 +1,6 @@
 {
   "name": "hf-upload",
-  "version": "3.3.6",
+  "version": "3.4.0",
   "description": "An upload tool",
   "main": "./lib/index.js",
   "types": "./declaration/index.d.ts",
