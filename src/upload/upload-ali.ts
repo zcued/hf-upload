@@ -66,14 +66,14 @@ export default class AliUpload {
     }
 
     const fileName = encodeURI(this.file.name)
-    const { uploadPath: uploadTmpPath, renderKey, acl } = this.options
+    const { uploadPath: uploadTmpPath, renderKey, acl, isHeadersAcl = false } = this.options
     const uploadPath = (typeof uploadTmpPath === 'string' ? uploadTmpPath : uploadTmpPath?.ali) || 'tmp'
     const key =
       typeof renderKey === 'function' ? renderKey(this.file) : `${uploadPath}/${this.file.uid}.${this.file.extension}`
 
     const opts: any = {
       progress,
-      headers: { 'content-disposition': 'inline' },
+      headers: isHeadersAcl ? { 'content-disposition': 'inline', 'x-oss-object-acl': 'private' } : { 'content-disposition': 'inline' },
       mime: this.file.mime_type,
       partSize: this.partSize * 1024,
     }

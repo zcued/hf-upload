@@ -26,6 +26,8 @@ export interface UploadOptions {
     /** 继承Bucket｜私有｜公共读｜公共读写 */
     value: 'default' | 'private' | 'public-read' | 'public-read-write'
   }
+   /** 设置社区请求头访问权限  */
+   isHeadersAcl?: boolean
 }
 
 export interface UploadFile {
